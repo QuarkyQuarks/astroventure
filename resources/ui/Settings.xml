@@ -1,0 +1,51 @@
+<RelativeLayout
+    name="pauseLayout"
+    horizontalSizePolicy="match_parent"
+    verticalSizePolicy="match_parent"
+    padding="16dp 16dp 16dp 16dp">
+
+    <ImageWidget
+        width="12.5dp"
+        height="12.5dp"
+        name="exit"
+        imageSrc="icons/exit.png"
+        imageFiltering="linear"
+        p_layoutAlignment="top|left"/>
+
+    <Label
+        name="label"
+        text="Settings"
+        fontSize="12dp"
+        fontColor="#ffffff"
+        p_layoutAlignment="top|center"/>
+
+    <LinearLayout
+        width="196dp"
+        height="32dp"
+        name=""
+        orientation="horizontal"
+        backgroundColor="#88645394"
+        script="ui/RoundedBackground.lua"
+        padding="8dp 8dp 8dp 8dp"
+        p_layoutAlignment="top|center"
+        p_marginTop="38dp">
+
+        <ImageWidget
+            width="12.5dp"
+            height="12.5dp"
+            name="exit"
+            imageSrc="icons/exit.png"
+            imageFiltering="linear"
+            p_layoutAlignment="center"/>
+
+        <Label
+            name="label"
+            text="Music"
+            fontSize="12dp"
+            fontColor="#ffffff"
+            p_layoutAlignment="center"
+            p_marginLeft="8dp"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

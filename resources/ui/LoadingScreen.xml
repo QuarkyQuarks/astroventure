@@ -1,0 +1,21 @@
+<RelativeLayout
+    name="gameOverLayout"
+    horizontalSizePolicy="match_parent"
+    verticalSizePolicy="match_parent"
+    padding="8dp 8dp 8dp 8dp">
+
+    <RotatingOrbitsWidget
+        name="loading_animation"
+        width="128dp"
+        height="128dp"
+        p_layoutAlignment="center"/>
+
+    <LoadingLabel
+        name="loading_label"
+        text="@string/loading"
+        fontSize="16dp"
+        fontColor="#ffffff"
+        p_layoutAlignment="center|bottom"
+        p_marginBottom="64dp"/>
+
+</RelativeLayout>

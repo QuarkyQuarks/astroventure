@@ -1,0 +1,5 @@
+<resources>
+    <string name="paused">Gra wstrzymana</string>
+    <string name="game_over">Przegrałeś!</string>
+    <string name="loading">Ładowanie...</string>
+</resources>

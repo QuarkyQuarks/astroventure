@@ -1,0 +1,5 @@
+material("Platform")
+shininess(1.3)
+ambientStrength(0.4)
+diffuseStrength(0.13)
+specularStrength(0.08)

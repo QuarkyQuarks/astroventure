@@ -1,0 +1,15 @@
+[submodule "contrib/PointCloudCrust"]
+	path = contrib/PointCloudCrust
+	url = https://github.com/congard/PointCloudCrust.git
+[submodule "contrib/delaunator-cpp"]
+	path = contrib/delaunator-cpp
+	url = https://github.com/delfrrr/delaunator-cpp.git
+[submodule "contrib/poisson-disk-sampling"]
+	path = contrib/poisson-disk-sampling
+	url = https://github.com/thinks/poisson-disk-sampling.git
+[submodule "contrib/random"]
+	path = contrib/random
+	url = https://github.com/effolkronium/random.git
+[submodule "contrib/soloud"]
+	path = contrib/soloud
+	url = https://github.com/jarikomppa/soloud.git

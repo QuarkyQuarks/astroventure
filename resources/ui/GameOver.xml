@@ -1,0 +1,23 @@
+<RelativeLayout
+    name="gameOverLayout"
+    horizontalSizePolicy="match_parent"
+    verticalSizePolicy="match_parent"
+    padding="8dp 8dp 8dp 8dp">
+
+<!--    <ImageWidget-->
+<!--        width="12.5dp"-->
+<!--        height="12.5dp"-->
+<!--        name="exit"-->
+<!--        imageSrc="icons/exit.png"-->
+<!--        imageFiltering="linear"-->
+<!--        p_layoutAlignment="top|center"-->
+<!--        p_marginTop="8dp"/>-->
+
+    <Label
+        name="label"
+        text="@string/game_over"
+        fontSize="16dp"
+        fontColor="#ffffff"
+        p_layoutAlignment="center"/>
+
+</RelativeLayout>

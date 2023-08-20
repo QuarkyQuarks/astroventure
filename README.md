@@ -1,0 +1,55 @@
+# Astroventure
+
+Low-Poly Space Game for Android & Linux written in C++20.
+
+## Dependencies
+
+1. Clone this project with submodules, i.e.
+   ```bash
+   git submodule update --init --recursive
+   ```
+2. Clone [algine](https://github.com/congard/algine)
+
+> [!NOTE]
+> You may also need to install additional libraries via your
+> package manager depending on your distro.
+
+### Fedora
+
+```bash
+sudo dnf install alsa-lib-devel
+```
+
+### Debian
+
+```bash
+sudo apt install libasound2-dev
+```
+
+## Structure
+
+```
+src         project sources
+resources   project resources, i.e. audio, fonts, icons etc.
+```
+
+> [!NOTE]
+> In order to launch the game on Linux,
+> working directory must be set to `resources`.
+
+## Toolchain
+
+The recommended tools are listed in the table below.
+
+| Description  | Tool    |
+|--------------|---------|
+| C compiler   | clang   |
+| C++ compiler | clang++ |
+| Debugger     | lldb    |
+| Linker       | mold    |
+
+## CMake options
+
+| Option       | Description    | Required |
+|--------------|----------------|----------|
+| `algine_dir` | path to algine | Yes      |

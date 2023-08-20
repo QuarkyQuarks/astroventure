@@ -1,0 +1,67 @@
+QuarkyQuarks License
+Version 1.0, August 2023
+
+Definitions:
+
+1. "The License" shall mean the QuarkyQuarks License
+   (Version 1.0, August 2023);
+
+2. "Organization owners" shall mean the owners of the
+   QuarkyQuarks organization;
+
+3. "Authorized person" shall mean the person who can use
+   this license along with the organization owners (unless
+   otherwise stated). The list of authorized persons and
+   their rights is attached to the project, named
+   AUTHORIZED and placed in the same directory as The
+   License (if such a list exists);
+
+4. "Licensee" shall mean both the organization owners and
+   authorized persons;
+
+5. "Work" shall mean the code, binary files, and other
+   components of the project;
+
+6. "Relicense" shall mean changing the license of an
+   existing work that has already been licensed under some
+   license;
+
+Terms & Conditions:
+
+1. The License can only be used by the licensees;
+
+2. The License can be freely changed by the organization
+   owners;
+
+3. The License allows the organization owners to relicense
+   any parts of this project (if there is no explicit
+   notice about the used license for file/module/directory,
+   etc.). This means that the organization owners can use
+   any parts of this project in their own projects under
+   any license they choose;
+
+4. The License grants the organization owners unlimited
+   rights. This includes redistribution, modification,
+   commercial and private use;
+
+5. The License grants authorized persons only the specific
+   rights described in the corresponding place of the list
+   of authorized persons;
+
+6. Those who do not have the rights to use this license
+   (i.e., everyone except licensees) must use the GPLv3
+   license;
+
+7. The project owners can use either The License or the
+   GPLv3 license at their discretion;
+
+Disclaimer:
+
+THE SOFTWARE IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY
+KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT,
+OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH
+THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
