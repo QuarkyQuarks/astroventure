@@ -50,7 +50,7 @@ public:
     Controller* getController() const;
 
     Cameraman& getCameraman();
-    Mechanics& getMechanics();
+    mechanics::Mechanics& getMechanics();
 
     Spacecraft* getSpacecraft() const;
     const std::vector<Planet*>& getPlanets() const;
@@ -86,7 +86,7 @@ private:
 
 private:
     Cameraman m_cameraman;
-    Mechanics m_mechanics;
+    mechanics::Mechanics m_mechanics;
     CrystalParticleSystem *m_crystalParticles;
 
 private:
@@ -110,6 +110,5 @@ private:
     long m_prevFrameTime;
     int m_prevDeltaFrameTime;
 };
-
 
 #endif //ASTROVENTURE_GAMESCENE_H
