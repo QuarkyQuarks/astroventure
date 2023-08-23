@@ -212,7 +212,7 @@ void Mechanics::flight() {
     vec2 impactFromPlanet[2];
     vec2 distToPlanet[2];
 
-    for (int i = 1; i < m_scene.getPlanets().size(); ++i) {
+    for (int i = 1; i < planets.size(); ++i) {
         const num_t radius = planets[i]->getOrbit()->getRadius() + spacecraft->getHeight() / 2;
 
         distToPlanet[i - 1] = spacecraft->getPos() - planets[i]->getPos();
