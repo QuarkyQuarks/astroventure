@@ -336,7 +336,7 @@ void Mechanics::landing() {
 
     constexpr num_t accelScalar = -1.5;
     num_t roll = spacecraft->getRoll() + PI / 2;
-    const vec2 acceleration {accelScalar * cosf(roll), accelScalar * sinf(roll)};
+    const vec2 acceleration {accelScalar * std::cos(roll), accelScalar * std::sin(roll)};
 
     vec3 deltaVel {0, 0, 0};
     deltaVel.x = ODE::linear(acceleration.x, stepInterval);
