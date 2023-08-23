@@ -341,14 +341,15 @@ void Mechanics::landing() {
     deltaVel.y = ODE::linear(acceleration.x, stepInterval);
     spacecraft->changeVelocity(deltaVel);
 
-    constexpr num_t planetRadius = 0.1; // TODO move to planet object
-
-    if (glm::distance(spacecraft->getPos(), planet->getPos()) <= planetRadius) {
+    if (glm::distance(spacecraft->getPos(), planet->getPos()) <= planet->getRadius()) {
         //TODO
         vec2 dir = glm::normalize(spacecraft->getPos() - planet->getPos());
         spacecraft->setRoll(-PI / 2 + (float) angleBetweenVectors(vec2 {1, 0}, dir));
         num_t angle = spacecraft->getRoll() + PI / 2;
-        vec3 final_pos = planet->getPos() + glm::vec3(planetRadius * std::cos(angle), planetRadius * std::sin(angle), 0);
+        vec3 final_pos = planet->getPos() + glm::vec3(
+            planet->getRadius() * std::cos(angle),
+            planet->getRadius() * std::sin(angle),
+            0.0f);
         spacecraft->setPos(final_pos);
 
         spacecraft->translate();
