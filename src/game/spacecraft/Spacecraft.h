@@ -1,7 +1,8 @@
-#ifndef SPACE_EXPLORER_SPACECRAFT_H
-#define SPACE_EXPLORER_SPACECRAFT_H
+#ifndef ASTROVENTURE_SPACECRAFT_H
+#define ASTROVENTURE_SPACECRAFT_H
 
 #include "game/base/SpaceModel.h"
+#include "game/mechanics/types.h"
 
 using namespace algine;
 
@@ -11,8 +12,22 @@ public:
 
     int getId() const;
 
+    void setVelocity(const mechanics::vec3 &velocity);
+    void setVelocity(const mechanics::vec2 &velocity);
+
+    void changeVelocity(const mechanics::vec3 &velocity);
+    void changeVelocity(const mechanics::vec2 &velocity);
+
+    const mechanics::vec3& getVelocity() const;
+
+    float getHeight() const;
+
 private:
     int m_id;
+
+    float m_height;
+
+    mechanics::vec3 m_velocity;
 };
 
-#endif //SPACE_EXPLORER_SPACECRAFT_H
+#endif //ASTROVENTURE_SPACECRAFT_H
