@@ -61,7 +61,7 @@ private:
     int m_index {IndexNone};
 
     float m_g {};
-    float m_radius {};
+    float m_radius {0.1f};
     float m_mass {};
     float m_angularVelocity {}; // rad per sec
     float m_previousAngle {};
