@@ -1,5 +1,5 @@
-#ifndef SPACE_EXPLORER_PLANETGRAPH_H
-#define SPACE_EXPLORER_PLANETGRAPH_H
+#ifndef ASTROVENTURE_PLANETGRAPH_H
+#define ASTROVENTURE_PLANETGRAPH_H
 
 #include <vector>
 
@@ -45,4 +45,4 @@ private:
     std::vector<std::vector<Association>> m_associations;
 };
 
-#endif //SPACE_EXPLORER_PLANETGRAPH_H
+#endif //ASTROVENTURE_PLANETGRAPH_H

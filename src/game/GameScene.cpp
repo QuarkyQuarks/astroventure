@@ -87,7 +87,7 @@ Cameraman& GameScene::getCameraman() {
     return m_cameraman;
 }
 
-Mechanics& GameScene::getMechanics() {
+mechanics::Mechanics& GameScene::getMechanics() {
     return m_mechanics;
 }
 

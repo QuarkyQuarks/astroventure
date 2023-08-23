@@ -5,15 +5,20 @@
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
 #include <glm/geometric.hpp>
+
+#include <cmath>
 
 // TODO: split declarations & definitions
 
 /// returns angle([-Pi, Pi]) between vectors considering appropriate orientation
-inline float angleBetweenVectors(glm::vec2 vector1, glm::vec2 vector2) {
-    float dot = vector1.x * vector2.x + vector1.y * vector2.y;
-    float det = vector1.x * vector2.y - vector2.x  * vector1.y;
-    float angle = atan2f(det, dot);
+template<typename T>
+T angleBetweenVectors(glm::vec<2, T> vector1, glm::vec<2, T> vector2) {
+    T dot = vector1.x * vector2.x + vector1.y * vector2.y;
+    T det = vector1.x * vector2.y - vector2.x  * vector1.y;
+    T angle = std::atan2(det, dot);
     return angle;
 }
 
@@ -24,15 +29,17 @@ inline glm::vec2 vectorOrientation(const glm::vec3& vector) {
 }
 
 /// returns equivalent to the provided angle within the bounds [0, 2Pi]
-inline float adjustedAngle(float angle0) {
-    float angle = fmodf(angle0, TWO_PI);
-    return angle < 0 ? angle + TWO_PI : angle;
+template<typename T>
+T adjustedAngle(T angle0) {
+    T angle = std::fmod(angle0, 2 * glm::pi<T>());
+    return angle < 0 ? angle + 2 * glm::pi<T>() : angle;
 }
 
 /// cubic interpolation between x [0, 1] (0 -> y1, 1 -> y2)
-template<typename T>
-T mixCubic(const T &p0, const T &p1, const T &p2, const T &p3, float x) {
-    return p1 + 0.5f * x * (p2 - p0 + x * (2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3 + x * (3.0f * (p1 - p2) + p3 - p0)));
+template<typename T, typename L>
+T mixCubic(const T &p0, const T &p1, const T &p2, const T &p3, L x) {
+    return p1 + L(0.5) * x * (p2 - p0 + x * (L(2.0) * p0 - L(5.0) * p1 +
+        L(4.0) * p2 - p3 + x * (L(3.0) * (p1 - p2) + p3 - p0)));
 }
 
 /**

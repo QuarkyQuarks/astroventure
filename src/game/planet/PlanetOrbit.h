@@ -38,6 +38,8 @@ public:
 public:
     explicit PlanetOrbit(tulz::Array<Platform> platforms, Object *parent = defaultParent()); // TODO: planet
 
+    float getRadius() const;
+
     bool isAroundPlanet() const;
     bool isFalling() const;
     bool isOnPlanet() const;
@@ -97,6 +99,8 @@ private:
 private:
     tulz::Array<Platform> m_platforms;
     int m_fallenChunks;
+
+    float m_radius;
 };
 
 class PlanetOrbit::Chunks {

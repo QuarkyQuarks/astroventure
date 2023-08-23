@@ -55,7 +55,8 @@ PlanetOrbit::Chunks::Iterator::reference PlanetOrbit::Chunks::Iterator::operator
 PlanetOrbit::PlanetOrbit(Array<Platform> platforms, Object *parent)
     : ClusterModel(SpaceModel::Type::PlanetOrbit, parent),
       m_platforms(std::move(platforms)),
-      m_fallenChunks(0)
+      m_fallenChunks(0),
+      m_radius(0.125)
 {
     setState(State::AroundPlanet);
 }
@@ -112,6 +113,8 @@ glm::mat4 PlanetOrbit::aroundPlanet(int platformID, int chunkID) {
 }
 
 void PlanetOrbit::fall(int touchdownPlatformId) {
+    setState(State::Falling);
+
     auto spacecraft = parentGameScene()->getSpacecraft();
     glm::vec2 spacecraftDir = glm::normalize(spacecraft->getPos() - parentPlanet()->getPos());
 
@@ -246,7 +249,6 @@ int PlanetOrbit::platformAt(float angle) const {
             return i;
         }
     }
-
     return -1;
 }
 
@@ -264,4 +266,8 @@ PlanetOrbit::Chunks PlanetOrbit::chunks() {
 
 Planet* PlanetOrbit::parentPlanet() const {
     return assert_cast<Planet*>(getParent());
+}
+
+float PlanetOrbit::getRadius() const {
+    return m_radius;
 }
