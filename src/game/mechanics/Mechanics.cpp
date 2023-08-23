@@ -121,7 +121,7 @@ void Mechanics::takeOff() {
 }
 
 bool Mechanics::inBounds(const vec2 &pos) const {
-    return abs(pos.x) <= m_bound.x && abs(pos.y) <= m_bound.y;
+    return std::abs(pos.x) <= m_bound.x && std::abs(pos.y) <= m_bound.y;
 }
 
 void Mechanics::trajectoryCalc() {
@@ -250,7 +250,7 @@ vec2 Mechanics::rotation(vec2 distToPlanet, num_t k) const {
     vec2 direction = glm::normalize(spacecraft->getVelocity());
     auto impact = glm::normalize(distToPlanet);
 
-    if (abs(k - 1) <= epsilon) { // k == 1
+    if (std::abs(k - 1) <= epsilon) { // k == 1
         return impact;
     } else {
         if (k > epsilon && k < 1) // k > 0 TODO
