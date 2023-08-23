@@ -90,7 +90,6 @@ void Mechanics::launch() {
 }
 
 void Mechanics::takeOff() {
-    Log::debug(LOG_TAG) << __func__;
     auto stepInterval = m_scene.getFrameTimeSec();
     auto spacecraft = m_scene.getSpacecraft();
     auto &velocity = spacecraft->getVelocity();
