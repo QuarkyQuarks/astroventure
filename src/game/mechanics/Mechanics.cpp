@@ -16,14 +16,13 @@ Mechanics::Mechanics(GameScene &scene)
     : m_state(State::Ground),
       m_bound(),
       m_scene(scene),
-      m_trajectory()
+      m_trajectory(),
+      step()
 {
     m_bound = mapScreenToWorld(
         glm::perspective(Cameraman::FieldOfView, 0.52f, Cameraman::Near, Cameraman::Far),
         {1.0f, 1.0f},
         -Cameraman::GamePos.z);
-
-    step_ptr = nullptr;
 }
 
 bool Mechanics::isOnGround() {
@@ -55,8 +54,8 @@ void Mechanics::setBound(const vec2 &bound) {
 }
 
 void Mechanics::update() {
-    if (step_ptr != nullptr) {
-        (this->*step_ptr)();
+    if (step != nullptr) {
+        (this->*step)();
 
         auto spacecraft = m_scene.getSpacecraft();
         spacecraft->translate();
@@ -84,7 +83,7 @@ void Mechanics::launch() {
     m_trajectory.landingPlanet = nullptr;
     m_trajectory.flightStart = 0;
 
-    step_ptr = &Mechanics::takeOff;
+    step = &Mechanics::takeOff;
     m_state = State::Launch;
 
     m_onLaunch.notify();
@@ -116,7 +115,7 @@ void Mechanics::takeOff() {
 
     if (distance >= takeOffDist && !(startingAngle < glm::pi<num_t>() * 2 && startingAngle > glm::pi<num_t>())) {
         trajectoryCalc();
-        step_ptr = &Mechanics::flight;
+        step = &Mechanics::flight;
     }
 }
 
@@ -302,7 +301,7 @@ void Mechanics::orbitDocking() {
 
     if (platformId != -1) {
         orbit->fall(platformId);
-        step_ptr = &Mechanics::landing;
+        step = &Mechanics::landing;
         m_onLanding.notify(planet);
         m_state = State::Landing;
     } else {
@@ -361,7 +360,7 @@ void Mechanics::landing() {
 
         m_onGround.notify(planet);
         m_state = State::Ground;
-        step_ptr = nullptr;
+        step = nullptr;
     }
 }
 }

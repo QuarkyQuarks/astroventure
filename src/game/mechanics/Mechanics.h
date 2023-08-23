@@ -60,7 +60,7 @@ private:
     } m_trajectory;
 
 private:
-    void (Mechanics::*step_ptr) ();
+    void (Mechanics::*step)();
 
     void takeOff();
     void trajectoryCalc();
