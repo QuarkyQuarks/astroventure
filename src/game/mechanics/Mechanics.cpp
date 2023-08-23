@@ -236,10 +236,12 @@ void Mechanics::flight() {
         spacecraft->setRoll((float) -angleBetweenVectors(mixed, vec2 {0, 1}));
     }
 
-    const num_t radius = planets[1]->getOrbit()->getRadius() + spacecraft->getHeight() / 2;
+    if (planet != nullptr) {
+        const num_t radius = planet->getOrbit()->getRadius() + spacecraft->getHeight() / 2;
 
-    if (planet && glm::distance(spacecraft->getPos(), planet->getPos()) <= radius) {
-        orbitDocking();
+        if (glm::distance(spacecraft->getPos(), planet->getPos()) <= radius) {
+            orbitDocking();
+        }
     }
 }
 
