@@ -226,14 +226,14 @@ void Mechanics::flight() {
 
     if (id >= pointsSize - 1 && planet) {
         auto dir = glm::normalize(impactFromPlanet[planet->getIndex() - 1]); // TODO rename
-        spacecraft->setRoll(-angleBetweenVectors(dir, {0.0f, 1.0f}));
+        spacecraft->setRoll((float) -angleBetweenVectors(dir, vec2 {0, 1}));
     } else {
         auto d1 = glm::length(distToPlanet[0]);
         auto d2 = glm::length(distToPlanet[1]);
         num_t ratio = d1 / (d1 + d2);
 
         auto mixed = glm::normalize(glm::mix(impactFromPlanet[0], impactFromPlanet[1], ratio));
-        spacecraft->setRoll(-angleBetweenVectors(mixed, {0.0f, 1.0f}));
+        spacecraft->setRoll((float) -angleBetweenVectors(mixed, vec2 {0, 1}));
     }
 
     const num_t radius = planets[1]->getOrbit()->getRadius() + spacecraft->getHeight() / 2;
@@ -291,12 +291,12 @@ void Mechanics::orbitDocking() {
     auto planet = m_trajectory.landingPlanet;
 
     vec2 dir = glm::normalize(spacecraft->getPos() - planet->getPos());
-    spacecraft->setRoll(-PI / 2 + angleBetweenVectors({1.0, 0.0}, dir));
+    spacecraft->setRoll(-PI / 2 + (float) angleBetweenVectors(vec2 {1, 0}, dir));
 
-    spacecraft->setVelocity({-std::cos(spacecraft->getRoll() + PI/2), -std::sin(spacecraft->getRoll() + PI/2), 0});
+    spacecraft->setVelocity({-std::cos(spacecraft->getRoll() + PI / 2), -std::sin(spacecraft->getRoll() + PI / 2), 0});
 
     auto orbit = planet->getOrbit();
-    int platformId = orbit->platformAtAbs(angleBetweenVectors({1.0, 0.0}, dir));
+    int platformId = orbit->platformAtAbs((float) angleBetweenVectors(vec2 {1, 0}, dir));
 
     if (platformId != -1) {
         orbit->fall(platformId);
@@ -346,7 +346,7 @@ void Mechanics::landing() {
     if (glm::distance(spacecraft->getPos(), planet->getPos()) <= planetRadius) {
         //TODO
         vec2 dir = glm::normalize(spacecraft->getPos() - planet->getPos());
-        spacecraft->setRoll(-PI / 2 + angleBetweenVectors({1.0, 0.0}, dir));
+        spacecraft->setRoll(-PI / 2 + (float) angleBetweenVectors(vec2 {1, 0}, dir));
         num_t angle = spacecraft->getRoll() + PI / 2;
         vec3 final_pos = planet->getPos() + glm::vec3(planetRadius * std::cos(angle), planetRadius * std::sin(angle), 0);
         spacecraft->setPos(final_pos);
