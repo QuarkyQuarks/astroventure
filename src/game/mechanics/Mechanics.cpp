@@ -204,7 +204,7 @@ void Mechanics::flight() {
     motion(id, timeRatio);
 
     // rotation
-    auto planets = m_scene.getPlanets();
+    auto &planets = m_scene.getPlanets();
     auto spacecraft = m_scene.getSpacecraft();
 
     constexpr num_t landingRadius = 0.3;
