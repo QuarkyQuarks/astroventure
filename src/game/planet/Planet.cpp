@@ -132,7 +132,7 @@ void Planet::destroyCrystals() {
 
     for (int i = 0; i < vertices.size() / 3; ++i) {
         glm::vec3 &vertex = getVertex(i);
-        float vRoll = angleBetweenVectors({1.0f, 0.0f}, vertex);
+        float vRoll = angleBetweenVectors({1.0f, 0.0f}, glm::vec2(vertex));
 
         int platformId = orbit->platformAt(vRoll);
 
