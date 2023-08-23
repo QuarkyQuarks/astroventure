@@ -140,9 +140,10 @@ void Mechanics::trajectoryCalc() {
     // (it happens even when we land on the planet);
     while (inBounds(position)) {
         auto velocity0 = velocity;
+        auto &planets = m_scene.getPlanets();
 
-        for (int i = 1; i < m_scene.getPlanets().size(); ++i) {
-            auto planet = m_scene.getPlanets()[i];
+        for (int i = 1; i < planets.size(); ++i) {
+            auto planet = planets[i];
             auto planetPos = vec2(planet->getPos());
 
             const num_t radius = planet->getOrbit()->getRadius() + spacecraft->getHeight() / 2;
