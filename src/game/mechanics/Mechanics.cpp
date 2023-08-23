@@ -134,7 +134,7 @@ void Mechanics::trajectoryCalc() {
     m_trajectory.velocity.emplace_back(velocity);
 
     num_t E = 0.01;
-    int closestToThePlanetId = 0;
+    int closestPlanetId = 0;
 
     // we are calculating points until our virtual spacecraft encounters the bounds
     // (it happens even when we land on the planet);
@@ -147,7 +147,7 @@ void Mechanics::trajectoryCalc() {
 
             const num_t radius = planet->getOrbit()->getRadius() + spacecraft->getHeight() / 2;
             num_t distToPlanet = glm::distance(position, planetPos);
-            num_t minDistToPlanet = glm::distance(m_trajectory.points[closestToThePlanetId], planetPos);
+            num_t minDistToPlanet = glm::distance(m_trajectory.points[closestPlanetId], planetPos);
 
             constexpr num_t margin = 0.02;
 
@@ -159,7 +159,7 @@ void Mechanics::trajectoryCalc() {
             velocity.y += ODE::gravity<&vec2::y, 2>(position - planetPos, E);
 
             if (distToPlanet < minDistToPlanet ) {
-                closestToThePlanetId = (int) m_trajectory.points.size();
+                closestPlanetId = (int) m_trajectory.points.size();
             }
 
             if (distToPlanet <= radius && !m_trajectory.landingPlanet) {
@@ -180,9 +180,9 @@ void Mechanics::trajectoryCalc() {
     // otherwise, we erase all the points after this critical point - we construct landing trajectory
 
     if (m_trajectory.landingPlanet) {
-        Log::debug(LOG_TAG) << closestToThePlanetId << "   " << m_trajectory.points.size() - 1 << Log::endl;
+        Log::debug(LOG_TAG) << closestPlanetId << "   " << m_trajectory.points.size() - 1 << Log::endl;
 
-        m_trajectory.points.erase(m_trajectory.points.begin() + closestToThePlanetId, m_trajectory.points.end());
+        m_trajectory.points.erase(m_trajectory.points.begin() + closestPlanetId, m_trajectory.points.end());
         // TODO: construct some artificial points to smooth out docking with orbit
         // TODO: erase unused velocities?
     }
