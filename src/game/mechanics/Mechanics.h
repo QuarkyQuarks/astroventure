@@ -1,8 +1,7 @@
 #ifndef ASTROVENTURE_MECHANICS_H
 #define ASTROVENTURE_MECHANICS_H
 
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
+#include "types.h"
 
 #include <tulz/observer/Subject.h>
 
@@ -13,6 +12,7 @@ using namespace tulz;
 class Planet;
 class GameScene;
 
+namespace mechanics {
 class Mechanics {
 public:
     enum class State {
@@ -27,9 +27,6 @@ public:
     explicit Mechanics(GameScene &scene);
 
 public:
-    void launch();
-    void update();
-
     bool isOnGround();
     bool isDestroyed();
 
@@ -38,7 +35,10 @@ public:
     Subscription<Planet*> addOnGroundListener(const Observer<Planet*> &listener);
     Subscription<> addOnDestroyedListener(const Observer<> &listener);
 
-    void setBound(const glm::vec2 &bound);
+    void setBound(const vec2 &bound);
+
+    void update();
+    void launch();
 
 private:
     Subject<> m_onLaunch;
@@ -47,12 +47,31 @@ private:
     Subject<> m_onDestroyed;
 
     State m_state;
-    glm::vec2 m_bound;
+    vec2 m_bound;
 
     GameScene &m_scene;
 
 private:
-    // TODO: internal implementation here
+    struct {
+        std::vector<vec2> points;
+        std::vector<vec2> velocity;
+        Planet* landingPlanet;
+        num_t flightStart;
+    } m_trajectory;
+
+private:
+    void (Mechanics::*step_ptr) ();
+
+    void takeOff();
+    void trajectoryCalc();
+    void flight();
+    void motion(int id, num_t ratio);
+    vec2 rotation(vec2 distToPlanet, num_t k) const;
+    void orbitDocking();
+    void landing();
+
+    bool inBounds(const vec2 &pos) const;
 };
+}
 
 #endif
