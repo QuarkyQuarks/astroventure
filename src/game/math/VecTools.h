@@ -38,7 +38,8 @@ T adjustedAngle(T angle0) {
 /// cubic interpolation between x [0, 1] (0 -> y1, 1 -> y2)
 template<typename T, typename L>
 T mixCubic(const T &p0, const T &p1, const T &p2, const T &p3, L x) {
-    return p1 + 0.5 * x * (p2 - p0 + x * (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3 + x * (3.0 * (p1 - p2) + p3 - p0)));
+    return p1 + L(0.5) * x * (p2 - p0 + x * (L(2.0) * p0 - L(5.0) * p1 +
+        L(4.0) * p2 - p3 + x * (L(3.0) * (p1 - p2) + p3 - p0)));
 }
 
 /**
