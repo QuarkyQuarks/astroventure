@@ -23,6 +23,8 @@ STATIC_INITIALIZER_IMPL(GameScene) {
 
 GameScene::GameScene(GameContent *parent)
     : Scene(parent),
+      m_score(0),
+      m_crystals(0),
       m_renderer(new GameRenderer(this)),
       m_cameraman(*this),
       m_mechanics(*this),
@@ -38,6 +40,14 @@ GameScene::GameScene(GameContent *parent)
       m_prevDeltaFrameTime(0)
 {
     m_settingsManager.load();
+
+    m_mechanics.addOnGroundListener([this](Planet*) {
+        ++m_score;
+    });
+
+    m_crystalParticles->addOnParticleRemovedListener([this] {
+        ++m_crystals;
+    });
 }
 
 void GameScene::init() {
