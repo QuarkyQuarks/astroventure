@@ -111,9 +111,9 @@ bool GameRenderPass::isPlanetVisible(Planet *planet) {
 void GameRenderPass::renderPlanets() {
     auto &planets = parentGameRenderer()->parentGameScene()->getPlanets();
 
-    for (auto planet : planets) {
+    planets.forEach([this](Planet *planet) {
         if (!isPlanetVisible(planet))
-            continue;
+            return;
 
         planet->update();
         planet->transform();
@@ -131,7 +131,7 @@ void GameRenderPass::renderPlanets() {
         }
 
         renderOrbit(planet->findChild<PlanetOrbit*>(FindOption::Direct));
-    }
+    });
 }
 
 void GameRenderPass::renderOrbit(PlanetOrbit *orbit) {
@@ -204,14 +204,12 @@ void GameRenderPass::renderAtmosphere() {
 
     m_atmosphereRenderer->begin();
 
-    for (auto planet : planets) {
-        auto index = planet->getIndex();
-
+    planets.forEach([this](Planet *planet) {
         if (!isPlanetVisible(planet) || !planet->hasAtmosphere())
-            continue;
+            return;
 
         m_atmosphereRenderer->render(planet);
-    }
+    });
 
     glDisable(GL_BLEND);
 }

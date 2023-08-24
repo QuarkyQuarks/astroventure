@@ -101,7 +101,11 @@ Spacecraft* GameScene::getSpacecraft() const {
     return m_spacecraft;
 }
 
-const std::vector<Planet*>& GameScene::getPlanets() const {
+const PlanetArray& GameScene::getPlanets() const {
+    return m_planets;
+}
+
+PlanetArray& GameScene::planets() {
     return m_planets;
 }
 
