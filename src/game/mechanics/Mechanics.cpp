@@ -298,6 +298,8 @@ void Mechanics::orbitDocking() {
     auto orbit = planet->getOrbit();
     int platformId = orbit->platformAtAbs((float) angleBetweenVectors(vec2 {1, 0}, dir));
 
+    spacecraft->setParent(orbit);
+
     if (platformId != -1) {
         orbit->fall(platformId);
         step = &Mechanics::landing;
@@ -338,7 +340,7 @@ void Mechanics::landing() {
 
     vec3 deltaVel {0, 0, 0};
     deltaVel.x = ODE::linear(acceleration.x, stepInterval);
-    deltaVel.y = ODE::linear(acceleration.x, stepInterval);
+    deltaVel.y = ODE::linear(acceleration.y, stepInterval);
     spacecraft->changeVelocity(deltaVel);
 
     constexpr num_t planetRadius = 0.1; // TODO move to planet object
@@ -354,8 +356,6 @@ void Mechanics::landing() {
         spacecraft->translate();
         spacecraft->rotate();
         spacecraft->transform();
-
-        spacecraft->setParent(planet->getOrbit());
 
         m_onGround.notify(planet);
         m_state = State::Ground;
