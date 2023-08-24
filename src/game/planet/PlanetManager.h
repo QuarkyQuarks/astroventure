@@ -4,21 +4,56 @@
 #include "PlanetGenerator.h"
 #include "OrbitGenerator.h"
 
+#include <map>
+#include <any>
+
 class PlanetManager: public Object, public Loadable {
 public:
     enum Flag {
-        None = 0b00,
-        DisableOrbit = 0b01,
-        JustClear = 0b10
+        None = 0b000,
+        DisableOrbit = 0b001,
+        JustClear = 0b010,
+        CalcPosition = 0b100
     };
+
+    enum class Property {
+        /**
+         * Key must be of type `PlanetManager::PositionDetails`.
+         * If specified, the planet's position will be set
+         * according to its index and sign.
+         */
+        PositionDetails
+    };
+
+    struct PositionDetails {
+        int index;
+        int xSign;
+    };
+
+    using Properties = std::map<Property, std::any>;
 
     using Callback = std::function<void(Planet*)>;
 
 public:
     explicit PlanetManager(Object *parent = defaultParent());
 
-    Planet* get(int flags = 0);
-    void getAsync(Callback callback, int flags = 0);
+    /**
+     * Returns a planet with the specified flags applied.
+     * @param flags The flags to be applied.
+     * @param properties The map of properties.
+     * @return The planet.
+     */
+    Planet* get(int flags = 0, const Properties &properties = {});
+
+    /**
+     * Returns a planet asynchronously with the
+     * specified flags applied.
+     * @param callback The callback that will be executed
+     * in the caller thread or in the rendering thread.
+     * @param flags The flags to be applied.
+     * @param properties The map of properties.
+     */
+    void getAsync(Callback callback, int flags = 0, const Properties &properties = {});
 
     /**
      * Takes ownership of <code>planet</code>
@@ -39,7 +74,10 @@ private:
      */
     Planet* popBase();
 
-    void clear(Planet *base, int flags);
+    void applyFlags(Planet *planet, int flags, const Properties &properties);
+
+    static void applyJustClear(Planet *planet);
+    static void applyCalcPosition(Planet *planet, const Properties &properties);
 
 private:
     OrbitGenerator *m_orbitGenerator;

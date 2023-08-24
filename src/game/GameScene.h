@@ -58,6 +58,7 @@ public:
 
     SettingsManager& getSettingsManager();
     ColorSchemeManager& getColorSchemeManager();
+    PlanetManager* getPlanetManager() const;
 
     ObservableInt& getScore();
     ObservableInt& getCrystals();
