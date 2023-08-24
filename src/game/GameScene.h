@@ -36,8 +36,6 @@ class GameScene: public Scene, public Loadable {
 public:
     explicit GameScene(GameContent *parent);
 
-    void init();
-
     void render() override;
 
     void pause();

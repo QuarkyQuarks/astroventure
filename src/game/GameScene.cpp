@@ -50,10 +50,6 @@ GameScene::GameScene(GameContent *parent)
     });
 }
 
-void GameScene::init() {
-
-}
-
 void GameScene::render() {
     auto currentFrameTime = Engine::timeFromStart();
     m_prevDeltaFrameTime = static_cast<int>(currentFrameTime - m_prevFrameTime);
