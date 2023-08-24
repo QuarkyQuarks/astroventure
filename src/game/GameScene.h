@@ -16,6 +16,7 @@
 #include "mechanics/Mechanics.h"
 #include "planet/PlanetManager.h"
 #include "planet/CrystalParticleSystem.h"
+#include "planet/PlanetArray.h"
 #include "spacecraft/SpacecraftManager.h"
 #include "scheme/ColorSchemeManager.h"
 #include "controller/Controller.h"
@@ -36,8 +37,6 @@ class GameScene: public Scene, public Loadable {
 public:
     explicit GameScene(GameContent *parent);
 
-    void init();
-
     void render() override;
 
     void pause();
@@ -53,11 +52,13 @@ public:
     mechanics::Mechanics& getMechanics();
 
     Spacecraft* getSpacecraft() const;
-    const std::vector<Planet*>& getPlanets() const;
+    const PlanetArray& getPlanets() const;
+    PlanetArray& planets();
     CrystalParticleSystem& getCrystalParticles();
 
     SettingsManager& getSettingsManager();
     ColorSchemeManager& getColorSchemeManager();
+    PlanetManager* getPlanetManager() const;
 
     ObservableInt& getScore();
     ObservableInt& getCrystals();
@@ -101,7 +102,7 @@ private:
 
 private:
     Spacecraft *m_spacecraft;
-    std::vector<Planet*> m_planets;
+    PlanetArray m_planets;
 
 private:
     std::unique_ptr<Controller> m_controller;

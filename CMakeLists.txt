@@ -121,6 +121,8 @@ set(Astroventure_SOURCES ${SoLoud_SOURCES}
         src/game/controller/StartController.h
         src/game/controller/GameController.cpp
         src/game/controller/GameController.h
+        src/game/planet/PlanetArray.cpp
+        src/game/planet/PlanetArray.h
         src/game/mechanics/types.h)
 
 if (ANDROID)

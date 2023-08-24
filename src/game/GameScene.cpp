@@ -23,6 +23,8 @@ STATIC_INITIALIZER_IMPL(GameScene) {
 
 GameScene::GameScene(GameContent *parent)
     : Scene(parent),
+      m_score(0),
+      m_crystals(0),
       m_renderer(new GameRenderer(this)),
       m_cameraman(*this),
       m_mechanics(*this),
@@ -38,10 +40,14 @@ GameScene::GameScene(GameContent *parent)
       m_prevDeltaFrameTime(0)
 {
     m_settingsManager.load();
-}
 
-void GameScene::init() {
+    m_mechanics.addOnGroundListener([this](Planet*) {
+        ++m_score;
+    });
 
+    m_crystalParticles->addOnParticleRemovedListener([this] {
+        ++m_crystals;
+    });
 }
 
 void GameScene::render() {
@@ -95,7 +101,11 @@ Spacecraft* GameScene::getSpacecraft() const {
     return m_spacecraft;
 }
 
-const std::vector<Planet*>& GameScene::getPlanets() const {
+const PlanetArray& GameScene::getPlanets() const {
+    return m_planets;
+}
+
+PlanetArray& GameScene::planets() {
     return m_planets;
 }
 
@@ -109,6 +119,10 @@ SettingsManager& GameScene::getSettingsManager() {
 
 ColorSchemeManager& GameScene::getColorSchemeManager() {
     return m_colorSchemeManager;
+}
+
+PlanetManager* GameScene::getPlanetManager() const {
+    return m_planetManager;
 }
 
 ObservableInt& GameScene::getScore() {
@@ -136,8 +150,17 @@ void GameScene::loadResources() {
     std::mutex mutex;
 
     for (int i = 0; i < planetCount; ++i) {
+        int flags = PlanetManager::Flag::CalcPosition;
+
+        if (i == 0)
+            flags |= PlanetManager::DisableOrbit;
+
+        PlanetManager::Properties properties = {
+            {PlanetManager::Property::PositionDetails, PlanetManager::PositionDetails {.index = i, .xSign = 1}}
+        };
+
         m_planetManager->getAsync([&, i](Planet *planet) {
-            planet->setIndex(i);
+            planet->setParent(this);
 
             {
                 std::lock_guard locker(mutex);
@@ -146,7 +169,7 @@ void GameScene::loadResources() {
             }
 
             cv.notify_one();
-        }, (i == 0 ? PlanetManager::Flag::DisableOrbit : PlanetManager::Flag::None));
+        }, flags, properties);
     }
 
     m_spacecraftManager->getAsync(m_settingsManager.getCurrentSpacecraftId(), [&](Spacecraft *spacecraft) {
@@ -170,36 +193,9 @@ void GameScene::loadResources() {
 }
 
 void GameScene::toInitialPositions() {
-    constexpr float planet_x = 0.125f; // horizontal distance between two neighboring planets
-    constexpr float planet_y = 0.45f; // vertical distance between two neighboring planets
-    constexpr float planet_z = 0.0f;
-
-    // positions of planets:
-    // 0: (-planet_x, -planet_y, planet_z)
-    // 1: ( planet_x, 0.0f,      planet_z)
-    // 2: (-planet_x, planet_y,  planet_z)
-    // and so on
-
-    for (auto planet : m_planets) {
-        auto index = planet->getIndex();
-
-        glm::vec3 initialPos {
-            planet_x * ((index % 2 == 0) ? -1.0f : 1.0f),
-            planet_y * static_cast<float>(index - 1),
-            planet_z
-        };
-
-        planet->changeClusterPos(initialPos - planet->getPos());
-
-        planet->setRoll(0);
-        planet->rotate();
-
-        planet->transform();
-    }
-
     // move spacecraft to the zero planet
-    m_spacecraft->setY(-planet_y);
-    m_spacecraft->setX(-0.025); // TODO: hardcoded value, must be -planet_x + planet_radius
-    m_spacecraft->setRoll(-PI / 2);
-    m_spacecraft->setParent(m_planets[0]);
+    auto planet = m_planets[0];
+    m_spacecraft->setX(planet->getX());
+    m_spacecraft->setY(planet->getY() + planet->getRadius());
+    m_spacecraft->setParent(planet);
 }
