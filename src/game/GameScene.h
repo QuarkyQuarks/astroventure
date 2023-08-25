@@ -45,7 +45,7 @@ public:
 
     GameContent* parentGameContent() const;
 
-    void setController(std::unique_ptr<Controller> controller);
+    void setController(Controller *controller);
     Controller* getController() const;
 
     Cameraman& getCameraman();
@@ -98,14 +98,14 @@ private:
     SpacecraftManager *m_spacecraftManager;
 
 private:
+    Controller *m_controller;
+
+private:
     GameRenderer *m_renderer;
 
 private:
     Spacecraft *m_spacecraft;
     PlanetArray m_planets;
-
-private:
-    std::unique_ptr<Controller> m_controller;
 
 private:
     long m_prevFrameTime;

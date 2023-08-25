@@ -3,6 +3,8 @@
 
 #include "Layer.h"
 
+#include "game/controller/StartController.h"
+
 namespace UI {
 class GameUIScene;
 
@@ -11,6 +13,12 @@ public:
     explicit StartLayer(GameUIScene *scene);
 
     void updateValues();
+
+protected:
+    void onShow() override;
+
+private:
+    StartController m_controller;
 };
 } // UI
 

@@ -34,7 +34,7 @@ GameScene::GameScene(GameContent *parent)
       m_planetManager(new PlanetManager(this)),
       m_spacecraftManager(new SpacecraftManager(this)),
       m_spacecraft(),
-      m_controller(std::make_unique<StartController>(*this)),
+      m_controller(),
       m_planets(3),
       m_prevFrameTime(Engine::timeFromStart()),
       m_prevDeltaFrameTime(0)
@@ -81,12 +81,12 @@ GameContent* GameScene::parentGameContent() const {
     return assert_cast<GameContent*>(getParent());
 }
 
-void GameScene::setController(std::unique_ptr<Controller> controller) {
-    m_controller = std::move(controller);
+void GameScene::setController(Controller *controller) {
+    m_controller = controller;
 }
 
 Controller* GameScene::getController() const {
-    return m_controller.get();
+    return m_controller;
 }
 
 Cameraman& GameScene::getCameraman() {

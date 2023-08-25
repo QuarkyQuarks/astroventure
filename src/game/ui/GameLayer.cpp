@@ -12,7 +12,8 @@
 
 namespace UI {
 GameLayer::GameLayer(GameUIScene *scene)
-    : Layer(scene)
+    : Layer(scene),
+      m_controller(*scene->parentGameScene())
 {
     auto container = Widget::constructFromXMLFile<Container*>("ui/GameContent.xml", this);
     setContainer(container);
@@ -84,6 +85,11 @@ void GameLayer::calcCrystalsEndPoint(float width, float height) {
 
     auto gameScene = parentGameUIScene()->parentGameScene();
     gameScene->getCrystalParticles().setEndPoint({endPoint, 0.0f});
+}
+
+void GameLayer::onShow() {
+    UI::Layer::onShow();
+    parentGameUIScene()->parentGameScene()->setController(&m_controller);
 }
 
 class ScoreAnimation: public Widgets::ColorAnimation {

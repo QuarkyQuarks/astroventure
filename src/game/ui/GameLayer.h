@@ -5,6 +5,7 @@
 #include <algine/core/widgets/Label.h>
 
 #include "Layer.h"
+#include "game/controller/GameController.h"
 
 namespace UI {
 class GameUIScene;
@@ -14,6 +15,9 @@ public:
     explicit GameLayer(GameUIScene *scene);
 
     void reset();
+
+protected:
+    void onShow() override;
 
 private:
     void calcCrystalsEndPoint(float width, float height);
@@ -26,6 +30,9 @@ private:
     Container *m_crystalsContainer;
     Label *m_labelScore;
     Label *m_labelCrystals;
+
+private:
+    GameController m_controller;
 };
 } // UI
 

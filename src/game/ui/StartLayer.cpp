@@ -8,17 +8,18 @@
 
 namespace UI {
 StartLayer::StartLayer(GameUIScene *scene)
-    : Layer(scene)
+    : Layer(scene),
+      m_controller(*scene->parentGameScene())
 {
     auto container = Widget::constructFromXMLFile<Container*>("ui/GameStartScreen.xml", this);
     setContainer(container);
 
     container->setEventListener(Event::Click, [scene](Widget*, const Event &event) {
-        scene->start->hide();
-        scene->game->show();
-
         auto controller = scene->parentGameScene()->getController();
         controller->event(event);
+
+        scene->start->hide();
+        scene->game->show();
     });
 
     auto settings = container->findChild<Widget*>("settings");
@@ -27,6 +28,11 @@ StartLayer::StartLayer(GameUIScene *scene)
     });
 
     AnimTools::setButtonAnimation(settings);
+}
+
+void StartLayer::onShow() {
+    UI::Layer::onShow();
+    parentGameUIScene()->parentGameScene()->setController(&m_controller);
 }
 
 void StartLayer::updateValues() {
