@@ -25,6 +25,11 @@ GameUIScene::GameUIScene(Object *parent)
     });
 }
 
+void GameUIScene::setSize(int width, int height) {
+    Widgets::Scene::setSize(width, height);
+    m_onSizeChanged.notify(width, height);
+}
+
 void GameUIScene::reset() {
     game->reset();
     start->updateValues();
@@ -39,5 +44,9 @@ MenuLayer* GameUIScene::firstMenuLayer() const {
         if (auto menuLayer = dynamic_cast<MenuLayer*>(layerAt(i)); menuLayer)
             return menuLayer;
     return nullptr;
+}
+
+Subscription<int, int> GameUIScene::addOnSizeChangedListener(const Observer<int, int> &listener) {
+    return m_onSizeChanged.subscribe(listener);
 }
 } // UI

@@ -36,7 +36,6 @@ GameLayer::GameLayer(GameUIScene *scene)
     m_crystalsContainer = container->findChild<Container*>("crystals_container");
 
     auto gameScene = scene->parentGameScene();
-    auto gameContent = gameScene->parentGameContent();
 
     gameScene->getScore().subscribe([this](int score) {
         scoreChanged();
@@ -46,7 +45,7 @@ GameLayer::GameLayer(GameUIScene *scene)
         crystalsChanged();
     });
 
-    gameContent->addOnSizeChangedListener([this](int width, int height) {
+    parentGameUIScene()->addOnSizeChangedListener([this](int width, int height) {
         calcCrystalsEndPoint(static_cast<float>(width), static_cast<float>(height));
     });
 }

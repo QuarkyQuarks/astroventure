@@ -9,6 +9,8 @@
 #include "game/ui/menu/PauseLayer.h"
 #include "game/ui/menu/SettingsLayer.h"
 
+#include <tulz/observer/Subject.h>
+
 class GameScene;
 
 namespace UI {
@@ -23,10 +25,17 @@ public:
 public:
     explicit GameUIScene(Object *parent);
 
+    void setSize(int width, int height) override;
+
     void reset();
 
     GameScene* parentGameScene() const;
     MenuLayer* firstMenuLayer() const;
+
+    tulz::Subscription<int, int> addOnSizeChangedListener(const tulz::Observer<int, int> &listener);
+
+private:
+    tulz::Subject<int, int> m_onSizeChanged;
 };
 } // UI
 
