@@ -51,7 +51,7 @@ glm::vec3 CrystalParticleSystem::getAcceleration(const ParticleSystem::Particle 
             return -particle.velocity * 12.0f;
         case 1: {
             glm::vec3 dir = glm::normalize(m_endPoint - particle.pos);
-            return dir * 2.0f;
+            return dir * 3.0f;
         }
     }
 
