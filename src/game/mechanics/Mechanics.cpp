@@ -64,8 +64,7 @@ void Mechanics::update() {
 
         // TODO: move this condition to flight() ?
         if (!inBounds(spacecraft->getPos())) {
-            m_onDestroyed.notify();
-            m_state = State::Destroyed;
+            destroyed();
         }
     }
 }
@@ -306,8 +305,7 @@ void Mechanics::orbitDocking() {
         m_onLanding.notify(planet);
         m_state = State::Landing;
     } else {
-        m_onDestroyed.notify();
-        m_state = State::Destroyed;
+        destroyed();
     }
 }
 
@@ -343,14 +341,15 @@ void Mechanics::landing() {
     deltaVel.y = ODE::linear(acceleration.y, stepInterval);
     spacecraft->changeVelocity(deltaVel);
 
-    constexpr num_t planetRadius = 0.1; // TODO move to planet object
-
-    if (glm::distance(spacecraft->getPos(), planet->getPos()) <= planetRadius) {
+    if (glm::distance(spacecraft->getPos(), planet->getPos()) <= planet->getRadius()) {
         //TODO
         vec2 dir = glm::normalize(spacecraft->getPos() - planet->getPos());
         spacecraft->setRoll(-PI / 2 + (float) angleBetweenVectors(vec2 {1, 0}, dir));
         num_t angle = spacecraft->getRoll() + PI / 2;
-        vec3 final_pos = planet->getPos() + glm::vec3(planetRadius * std::cos(angle), planetRadius * std::sin(angle), 0);
+        vec3 final_pos = planet->getPos() + glm::vec3(
+            planet->getRadius() * std::cos(angle),
+            planet->getRadius() * std::sin(angle),
+            0.0f);
         spacecraft->setPos(final_pos);
 
         spacecraft->translate();
@@ -361,5 +360,11 @@ void Mechanics::landing() {
         m_state = State::Ground;
         step = nullptr;
     }
+}
+
+void Mechanics::destroyed() {
+    m_onDestroyed.notify();
+    m_state = State::Destroyed;
+    step = nullptr;
 }
 }
