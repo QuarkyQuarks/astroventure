@@ -71,6 +71,8 @@ private:
     void landing();
 
     bool inBounds(const vec2 &pos) const;
+
+    void destroyed();
 };
 }
 

@@ -64,8 +64,7 @@ void Mechanics::update() {
 
         // TODO: move this condition to flight() ?
         if (!inBounds(spacecraft->getPos())) {
-            m_onDestroyed.notify();
-            m_state = State::Destroyed;
+            destroyed();
         }
     }
 }
@@ -306,8 +305,7 @@ void Mechanics::orbitDocking() {
         m_onLanding.notify(planet);
         m_state = State::Landing;
     } else {
-        m_onDestroyed.notify();
-        m_state = State::Destroyed;
+        destroyed();
     }
 }
 
@@ -362,5 +360,11 @@ void Mechanics::landing() {
         m_state = State::Ground;
         step = nullptr;
     }
+}
+
+void Mechanics::destroyed() {
+    m_onDestroyed.notify();
+    m_state = State::Destroyed;
+    step = nullptr;
 }
 }
