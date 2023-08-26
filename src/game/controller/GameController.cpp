@@ -182,6 +182,11 @@ void GameController::reset() {
 }
 
 void GameController::resetPlanets() {
+    // since the spacecraft is attached to an orbit,
+    // and it will be deleted, we need to prevent
+    // spacecraft deletion
+    m_gameScene.getSpacecraft()->setParent(&m_gameScene);
+
     auto planetManager = m_gameScene.getPlanetManager();
     auto &planets = m_gameScene.planets();
     auto planetCount = planets.size();
