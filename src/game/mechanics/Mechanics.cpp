@@ -178,8 +178,6 @@ void Mechanics::trajectoryCalc() {
     // otherwise, we erase all the points after this critical point - we construct landing trajectory
 
     if (m_trajectory.landingPlanet) {
-        Log::debug(LOG_TAG) << closestPlanetId << "   " << m_trajectory.points.size() - 1 << Log::endl;
-
         m_trajectory.points.erase(m_trajectory.points.begin() + closestPlanetId, m_trajectory.points.end());
         // TODO: construct some artificial points to smooth out docking with orbit
         // TODO: erase unused velocities?
@@ -314,17 +312,6 @@ void Mechanics::landing() {
     auto planet = m_trajectory.landingPlanet;
 
     auto stepInterval = m_scene.getFrameTimeSec();
-    const num_t angularVelocity = planet->getAngularVelocity();
-
-    const vec2 pos = spacecraft->getPos() - planet->getPos();
-
-    const num_t deltaAngle = adjustedAngle(stepInterval * angularVelocity);
-
-    const num_t x = pos.x * std::cos(deltaAngle) - pos.y * std::sin(deltaAngle);
-    const num_t y = pos.x * std::sin(deltaAngle) + pos.y * std::cos(deltaAngle);
-
-    spacecraft->setRoll(spacecraft->getRoll() + deltaAngle);
-    spacecraft->setPos({planet->getX() + x, planet->getY() + y, 0.0});
 
     //radial translation
     vec3 deltaPos {0, 0, 0};
