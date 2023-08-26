@@ -7,6 +7,7 @@
 #include <algine/core/assert_cast.h>
 #include <algine/core/Engine.h>
 #include <algine/core/Framebuffer.h>
+#include <algine/core/Window.h>
 
 STATIC_INITIALIZER_IMPL(GameScene) {
     Lua::addTypeLoader("GameScene", [](sol::environment &env) {
@@ -25,6 +26,7 @@ GameScene::GameScene(GameContent *parent)
     : Scene(parent),
       m_score(0),
       m_crystals(0),
+      m_resetStatus(0),
       m_renderer(new GameRenderer(this)),
       m_cameraman(*this),
       m_mechanics(*this),
@@ -47,6 +49,10 @@ GameScene::GameScene(GameContent *parent)
     m_crystalParticles->addOnParticleRemovedListener([this] {
         ++m_crystals;
     });
+
+    addOnResetListener([this] {
+        resetProgress();
+    });
 }
 
 void GameScene::render() {
@@ -62,6 +68,17 @@ void GameScene::render() {
 
 void GameScene::pause() {
 
+}
+
+void GameScene::triggerReset() {
+    // This call is needed to prevent potential `onResetCompleted`
+    // triggering while `onReset` event is being sent
+    beginReset();
+
+    m_onReset.notify();
+
+    // Triggers `onResetCompleted` if needed
+    endReset();
 }
 
 LoaderConfig GameScene::resourceLoaderConfig() {
@@ -130,6 +147,32 @@ ObservableInt& GameScene::getScore() {
 
 ObservableInt& GameScene::getCrystals() {
     return m_crystals;
+}
+
+Subscription<> GameScene::addOnResetListener(const Observer<> &listener) {
+    return m_onReset.subscribe(listener);
+}
+
+Subscription<> GameScene::addOnResetCompletedListener(const Observer<> &listener) {
+    return m_onResetCompleted.subscribe(listener);
+}
+
+void GameScene::beginReset() {
+    ++m_resetStatus;
+}
+
+void GameScene::endReset() {
+    if (--m_resetStatus == 0) {
+        getParentWindow()->invokeLater([this] {
+            m_onResetCompleted.notify();
+        });
+    }
+}
+
+void GameScene::resetProgress() {
+    m_settingsManager.saveProgress();
+    m_score = ObservableInt {0};
+    m_crystals = ObservableInt {0};
 }
 
 float GameScene::getFrameTimeSec() const {

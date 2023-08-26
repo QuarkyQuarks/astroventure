@@ -25,8 +25,8 @@ GameController::GameController(GameScene &gameScene)
         generatePlanets(planet->getIndex());
     });
 
-    mechanics.addOnDestroyedListener([]() {
-        // TODO: reset
+    gameScene.addOnResetListener([this] {
+        reset();
     });
 }
 
@@ -171,4 +171,60 @@ void GameController::afterScroll() {
     }
 
     unblockLaunch();
+}
+
+void GameController::reset() {
+    m_gameScene.beginReset();
+
+    unblockLaunch();
+
+    resetPlanets();
+}
+
+void GameController::resetPlanets() {
+    auto planetManager = m_gameScene.getPlanetManager();
+    auto &planets = m_gameScene.planets();
+    auto planetCount = planets.size();
+
+    for (auto planet : planets)
+        planetManager->done(planet);
+
+    planets.erase(planets.begin(), planets.end());
+
+    for (int i = 0; i < planetCount; ++i) {
+        int flags = PlanetManager::Flag::CalcPosition;
+
+        if (i == 0)
+            flags |= PlanetManager::DisableOrbit;
+
+        PlanetManager::Properties properties = {
+            {PlanetManager::Property::PositionDetails, PlanetManager::PositionDetails {.index = i, .xSign = 1}}
+        };
+
+        planetManager->getAsync([=, this](Planet *planet) {
+            planet->setParent(&m_gameScene);
+
+            auto &planets = m_gameScene.planets();
+            planets[i] = planet;
+
+            if (planets.count() == planetCount) {
+                resetSpacecraft();
+                resetCamera();
+                m_gameScene.endReset();
+            }
+        }, flags, properties);
+    }
+}
+
+void GameController::resetSpacecraft() {
+    auto &planets = m_gameScene.getPlanets();
+    auto spacecraft = m_gameScene.getSpacecraft();
+    spacecraft->attachTo(planets[0]);
+}
+
+void GameController::resetCamera() {
+    // must be called after the planets have been generated
+    // because the cameraman's home animation depends on the
+    // position of the zeroth planet
+    m_gameScene.getCameraman().startAnimation(Cameraman::Animation::Home);
 }

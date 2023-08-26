@@ -5,12 +5,21 @@
 
 class Planet;
 
+/**
+ * The class that describes in-game logic.
+ */
 class GameController: public Controller {
 public:
     explicit GameController(GameScene &gameScene);
 
     void update() override;
     void event(const algine::Event &event) override;
+
+private:
+    void reset();
+    void resetPlanets();
+    void resetSpacecraft();
+    void resetCamera();
 
 private:
     void blockLaunch();

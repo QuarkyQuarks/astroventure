@@ -46,6 +46,10 @@ GameLayer::GameLayer(GameUIScene *scene)
         crystalsChanged();
     });
 
+    gameScene->addOnResetListener([this] {
+        reset();
+    });
+
     parentGameUIScene()->addOnSizeChangedListener([this](int width, int height) {
         calcCrystalsEndPoint(static_cast<float>(width), static_cast<float>(height));
     });
