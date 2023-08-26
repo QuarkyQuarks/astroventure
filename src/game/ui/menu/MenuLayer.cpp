@@ -72,29 +72,36 @@ bool MenuLayer::isFlagEnabled(Flag flag) const {
 
 void MenuLayer::setCloseWidget(Widget *widget, const CloseAction &closeAction) {
     widget->setEventListener(Event::Click, [this, closeAction](Widget*, const Event&) {
-        auto &animations = getContainer()->getAnimations();
-        auto anim = animations.empty() ? nullptr : dynamic_cast<MenuAnimation*>(animations.front().get());
-
-        if (anim && anim->getType() == MenuAnimation::Type::Close)
+        if (!close())
             return;
-
-        setFlag(Flag::Open, false);
-        setFlag(Flag::Close);
-
-        auto closeAnim = std::make_unique<MenuAnimation>(this, getOpacity(), 0.0f);
-
-        if (anim) {
-            closeAnim->start(1.0f - anim->getPos());
-            anim->stop();
-        } else {
-            closeAnim->start();
-        }
-
-        getContainer()->addAnimation(std::move(closeAnim));
 
         if (closeAction) {
             closeAction();
         }
     });
+}
+
+bool MenuLayer::close() {
+    auto &animations = getContainer()->getAnimations();
+    auto anim = animations.empty() ? nullptr : dynamic_cast<MenuAnimation*>(animations.front().get());
+
+    if (anim && anim->getType() == MenuAnimation::Type::Close)
+        return false;
+
+    setFlag(Flag::Open, false);
+    setFlag(Flag::Close);
+
+    auto closeAnim = std::make_unique<MenuAnimation>(this, getOpacity(), 0.0f);
+
+    if (anim) {
+        closeAnim->start(1.0f - anim->getPos());
+        anim->stop();
+    } else {
+        closeAnim->start();
+    }
+
+    getContainer()->addAnimation(std::move(closeAnim));
+
+    return true;
 }
 } // UI

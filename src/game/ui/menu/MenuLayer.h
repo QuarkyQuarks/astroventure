@@ -35,6 +35,13 @@ protected:
     void onShow() override;
     void setCloseWidget(Widget *widget, const CloseAction &closeAction = {});
 
+    /**
+     * Closes the menu with a fade animation.
+     * @return `true` is success, `false` otherwise
+     * @note `false` will be returned if the menu is already being closed
+     */
+    bool close();
+
 private:
     std::bitset<2> m_flags;
 };
