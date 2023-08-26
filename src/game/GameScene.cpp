@@ -29,6 +29,7 @@ GameScene::GameScene(GameContent *parent)
       m_cameraman(*this),
       m_mechanics(*this),
       m_crystalParticles(new CrystalParticleSystem(this)),
+      m_settingsManager(*this),
       m_audioManager(*this),
       m_colorSchemeManager(*this),
       m_planetManager(new PlanetManager(this)),

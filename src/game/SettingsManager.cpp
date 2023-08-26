@@ -1,4 +1,5 @@
 #include "SettingsManager.h"
+#include "game/GameScene.h"
 
 #include <algine/core/io/StandardIOSystem.h>
 #include <algine/core/PtrMaker.h>
@@ -17,8 +18,9 @@ inline auto settingsFilePath() {
 }
 #endif
 
-SettingsManager::SettingsManager()
-    : m_io(PtrMaker::make<StandardIOSystem>())
+SettingsManager::SettingsManager(GameScene &scene)
+    : m_io(PtrMaker::make<StandardIOSystem>()),
+      m_scene(scene)
 {
     load();
 }
@@ -34,6 +36,18 @@ void SettingsManager::save() {
     stream->writeStr(SettingsManager::toXMLString());
     stream->flush();
     stream->close();
+}
+
+void SettingsManager::saveProgress() {
+    auto crystals = *m_scene.getCrystals();
+    auto score = *m_scene.getScore();
+
+    setInt(SettingsManager::Crystals, getCrystals() + crystals);
+
+    if (score > getHighScore())
+        setInt(SettingsManager::HighScore, score);
+
+    save();
 }
 
 int SettingsManager::getHighScore() const {

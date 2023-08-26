@@ -6,6 +6,8 @@
 
 using namespace algine;
 
+class GameScene;
+
 class SettingsManager: public Resources {
 public:
     constexpr static auto HighScore = "high_score";
@@ -13,10 +15,15 @@ public:
     constexpr static auto CurrentSpaceshipId = "spaceship_id";
 
 public:
-    SettingsManager();
+    explicit SettingsManager(GameScene &scene);
 
     void load();
     void save();
+
+    /**
+     * Updates & saves the progress (crystal count & score)
+     */
+    void saveProgress();
 
     int getHighScore() const;
     int getCrystals() const;
@@ -28,6 +35,7 @@ private:
 
 private:
     Ptr<IOSystem> m_io;
+    GameScene &m_scene;
 };
 
 #endif //ASTROVENTURE_SETTINGSMANAGER_H
