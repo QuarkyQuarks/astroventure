@@ -14,7 +14,6 @@ GameUIScene::GameUIScene(Object *parent)
     pause = new PauseLayer(this);
     settings = new SettingsLayer(this);
 
-    start->updateValues();
     start->show();
 
     auto gameContent = parentGameScene()->parentGameContent();
@@ -28,11 +27,6 @@ GameUIScene::GameUIScene(Object *parent)
 void GameUIScene::setSize(int width, int height) {
     Widgets::Scene::setSize(width, height);
     m_onSizeChanged.notify(width, height);
-}
-
-void GameUIScene::reset() {
-    game->reset();
-    start->updateValues();
 }
 
 GameScene* GameUIScene::parentGameScene() const {

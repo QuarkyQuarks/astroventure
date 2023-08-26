@@ -27,8 +27,6 @@ public:
 
     void setSize(int width, int height) override;
 
-    void reset();
-
     GameScene* parentGameScene() const;
     MenuLayer* firstMenuLayer() const;
 
