@@ -33,6 +33,7 @@ StartLayer::StartLayer(GameUIScene *scene)
 void StartLayer::onShow() {
     UI::Layer::onShow();
     parentGameUIScene()->parentGameScene()->setController(&m_controller);
+    updateValues();
 }
 
 void StartLayer::updateValues() {
