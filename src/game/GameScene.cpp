@@ -39,8 +39,6 @@ GameScene::GameScene(GameContent *parent)
       m_prevFrameTime(Engine::timeFromStart()),
       m_prevDeltaFrameTime(0)
 {
-    m_settingsManager.load();
-
     m_mechanics.addOnGroundListener([this](Planet*) {
         ++m_score;
     });

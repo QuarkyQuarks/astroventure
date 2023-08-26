@@ -2,7 +2,6 @@
 
 #include <algine/core/io/StandardIOSystem.h>
 #include <algine/core/PtrMaker.h>
-#include <algine/core/Engine.h>
 
 #include <tulz/Path.h>
 
@@ -19,7 +18,10 @@ inline auto settingsFilePath() {
 #endif
 
 SettingsManager::SettingsManager()
-    : m_io(PtrMaker::make<StandardIOSystem>()) {}
+    : m_io(PtrMaker::make<StandardIOSystem>())
+{
+    load();
+}
 
 void SettingsManager::load() {
     if (auto path = settingsFilePath(); m_io->exists(path)) {
