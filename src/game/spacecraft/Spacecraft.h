@@ -8,7 +8,7 @@ using namespace algine;
 
 class Spacecraft: public SpaceModel {
 public:
-    explicit Spacecraft(int id, Object *parent = defaultParent()); // TODO
+    explicit Spacecraft(int id, Object *parent = defaultParent());
 
     int getId() const;
 
@@ -21,6 +21,14 @@ public:
     const mechanics::vec3& getVelocity() const;
 
     float getHeight() const;
+
+    /**
+     * Attaches the spacecraft to the specified planet, i.e.
+     * translates the spacecraft to the surface of the planet
+     * and sets it as the parent of the spacecraft.
+     * @param planet The planet to attach the spacecraft to.
+     */
+    void attachTo(Planet *planet);
 
 private:
     int m_id;

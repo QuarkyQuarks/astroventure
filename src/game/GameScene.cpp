@@ -191,9 +191,7 @@ void GameScene::loadResources() {
 }
 
 void GameScene::toInitialPositions() {
-    // move spacecraft to the zero planet
+    // move the spacecraft to the zeroth planet
     auto planet = m_planets[0];
-    m_spacecraft->setX(planet->getX());
-    m_spacecraft->setY(planet->getY() + planet->getRadius());
-    m_spacecraft->setParent(planet);
+    m_spacecraft->attachTo(planet);
 }

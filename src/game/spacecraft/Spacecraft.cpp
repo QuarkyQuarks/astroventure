@@ -1,4 +1,5 @@
 #include "Spacecraft.h"
+#include "game/planet/Planet.h"
 
 Spacecraft::Spacecraft(int id, Object *parent)
     : SpaceModel(SpaceModel::Type::Spacecraft, parent),
@@ -32,4 +33,11 @@ const mechanics::vec3 & Spacecraft::getVelocity() const {
 
 float Spacecraft::getHeight() const {
     return m_height;
+}
+
+void Spacecraft::attachTo(Planet *planet) {
+    setX(planet->getX());
+    setY(planet->getY() + planet->getRadius());
+    setRoll(0);
+    setParent(planet);
 }
