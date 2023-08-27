@@ -2,11 +2,18 @@
 
 #include "game/math/MathConstants.h"
 #include "game/math/VecTools.h"
+#include "game/GameScene.h"
 
 #include <algine/core/Window.h>
 #include <algine/std/model/ShapeBuilder.h>
+#include <algine/core/log/Log.h>
+#include <algine/core/assert_cast.h>
+
+#include <cmath>
 
 #include "effolkronium/random.hpp"
+
+#define LOG_TAG "OrbitGenerator"
 
 using Random = effolkronium::random_static;
 using namespace tulz;
@@ -15,50 +22,93 @@ OrbitGenerator::OrbitGenerator(Object *parent)
     : Object(parent),
       m_platformShape() {}
 
-PlanetOrbit* OrbitGenerator::generate() {
-    constexpr int maxPlatformNumber = 6;
+static std::vector<float> segmentsGenerator(float density, float minSegmentLength, float minMargin) {
+    auto maxSegments = static_cast<int>(density / minSegmentLength);
+    auto maxMargins = static_cast<int>((1.0f - density) / minSegmentLength);
+    maxSegments = maxSegments > maxMargins ? maxMargins : maxSegments;
 
-    struct Info {float angle; int chunkNumber;};
-    std::vector<Info> platforms;
-    platforms.reserve(maxPlatformNumber);
+    const int partitionsNumber = Random::get(0, maxSegments);
 
-    constexpr int minChunkNumber0 = 7;
-    constexpr int maxChunkNumber0 = 15;
-    platforms.emplace_back((Info){0.0f, Random::get(minChunkNumber0, maxChunkNumber0)});
+    auto segmentation = [](int gridsNumber, float lowerEdge, float upperEdge, float offset) {
+        std::vector<float> partitions {lowerEdge, upperEdge};
 
-    constexpr int overallChunkOffset = 3 * 2;
+        for (int i = 0; i < gridsNumber; ++i) {
+            float segment = Random::get(lowerEdge + offset, upperEdge - offset);
+            partitions.push_back(segment);
 
-    for (int i = 1; i < maxPlatformNumber; ++i) {
-        float chunkAngle = PlanetOrbit::ChunkAngle;
-        const float previousPlatform = platforms[i - 1].angle + static_cast<float>(platforms[i - 1].chunkNumber) * chunkAngle;
-
-        const float availableAngleRange = TWO_PI - (previousPlatform + overallChunkOffset * chunkAngle);
-        const int availableChunksRange = static_cast<int>(availableAngleRange / chunkAngle);
-
-        constexpr int minChunkNumber = 4;
-
-        if (availableChunksRange > minChunkNumber) {
-            const int chunks = Random::get(minChunkNumber, availableChunksRange);
-
-            const float minOffset = chunkAngle * 2.5f;
-            const float maxOffset = minOffset + availableAngleRange - static_cast<float>(chunks) * chunkAngle;
-            const float offset = Random::get(minOffset, maxOffset);
-
-            platforms.emplace_back((Info){previousPlatform + offset, chunks});
-        } else {
-            break;
+            if ((upperEdge - segment) > (segment - lowerEdge)) {
+                lowerEdge = segment;
+            } else {
+                upperEdge = segment;
+            }
         }
+
+        std::sort(partitions.begin(), partitions.end());
+
+        std::vector<float> segments;
+
+        for (int i = 0; i < (partitions.size() - 1); ++i) {
+            segments.push_back(partitions[i + 1] - partitions[i]);
+        }
+
+        return segments;
+    };
+
+    auto segments = segmentation(partitionsNumber, 0.0, density, minSegmentLength);
+    auto margins = segmentation(partitionsNumber, density, 1.0, minMargin);
+
+    std::vector<float> processedSegment;
+
+    for (int i = 0; i < segments.size(); ++i) {
+        processedSegment.push_back(segments[i]);
+        processedSegment.push_back(margins[i]);
     }
 
-    Array<PlanetOrbit::Platform> tmp(platforms.size());
+    return processedSegment;
+}
+
+PlanetOrbit* OrbitGenerator::generate() {
+    /**
+     * density is a main parameter of the whole algorithm, it is normalised from 0.0 to 1.0
+     * basically it indicates how much our orbit is filled with platforms
+     * density is calculated using some predefined mathematical function (of timestep) that will
+     * asymptotically describe behaviour of our generation process
+     */
+
+    auto asymptoticDensity = [](float t) {
+        return (float) (1.25 - (2.f / PI) * std::atan((t + 14) * 0.05));
+    };
+
+    int score = *parentGameScene()->getScore();
+    float density = asymptoticDensity((float) score);
+
+    Log::debug(LOG_TAG) << score << " : " << density << Log::endl;
+
+    /// `segmentsGenerator` returns array of segments distributed on a unit segment
+    /// then we map this segments into our orbit in form of platforms consisting of chunks
+
+    // minimal size of the platform - 6 chunks, minimal margin between platforms - 4 chunks
+    constexpr float minSegmentSize = (float) 4 / (float) PlanetOrbit::ChunkConstant;
+    constexpr float minMargin = (float) 2 / (float) PlanetOrbit::ChunkConstant;
+    auto processedSegments = segmentsGenerator(density, minSegmentSize, minMargin);
+
+    Array<PlanetOrbit::Platform> platforms(processedSegments.size() / 2);
 
     const float offsetAngle = Random::get(0.0f, TWO_PI);
 
-    int i = 0;
-    for (auto & platform : platforms) {
-        tmp[i++] = {
-            adjustedAngle(platform.angle + offsetAngle),
-            tulz::Array<PlanetOrbit::Chunk>(platform.chunkNumber, {
+    // mapping
+    for (int i = 0; i < processedSegments.size(); i += 2) {
+        float ratio = 0;
+        for (int j = 0; j < i; ++j) {
+            ratio += processedSegments[j];
+        }
+
+        float angle = ratio * TWO_PI;
+        auto chunkNumber = static_cast<int>(processedSegments[i] * PlanetOrbit::ChunkConstant);
+
+        platforms[i / 2] = {
+            adjustedAngle(angle + offsetAngle),
+            tulz::Array<PlanetOrbit::Chunk>(chunkNumber, {
                 .radius = PlanetOrbit::defaultPlatformRadius,
                 .velocity = 0.0f,
                 .isFell = false
@@ -71,7 +121,7 @@ PlanetOrbit* OrbitGenerator::generate() {
         {PI, tulz::Array<PlanetOrbit::Chunk>(38 / 2, {PlanetOrbit::defaultPlatformRadius, 0.0f, false})}
     };
 
-    auto orbit = new PlanetOrbit(std::move(tmp2), this);
+    auto orbit = new PlanetOrbit(std::move(platforms), this);
     orbit->setShape(m_platformShape);
     orbit->setRotatorType(Rotator::Type::Euler);
     orbit->translate();
@@ -80,6 +130,10 @@ PlanetOrbit* OrbitGenerator::generate() {
     orbit->transform();
 
     return orbit;
+}
+
+GameScene* OrbitGenerator::parentGameScene() {
+    return assert_cast<GameScene*>(getParentScene());
 }
 
 LoaderConfig OrbitGenerator::resourceLoaderConfig() {
