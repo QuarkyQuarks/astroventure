@@ -31,6 +31,7 @@ static std::vector<float> segmentsGenerator(float density, float minSegmentLengt
 
     auto segmentation = [](int gridsNumber, float lowerEdge, float upperEdge, float offset) {
         std::vector<float> partitions {lowerEdge, upperEdge};
+        partitions.reserve(gridsNumber);
 
         for (int i = 0; i < gridsNumber; ++i) {
             float segment = Random::get(lowerEdge + offset, upperEdge - offset);
@@ -46,6 +47,7 @@ static std::vector<float> segmentsGenerator(float density, float minSegmentLengt
         std::sort(partitions.begin(), partitions.end());
 
         std::vector<float> segments;
+        segments.reserve(gridsNumber - 1);
 
         for (int i = 0; i < (partitions.size() - 1); ++i) {
             segments.push_back(partitions[i + 1] - partitions[i]);
@@ -57,14 +59,15 @@ static std::vector<float> segmentsGenerator(float density, float minSegmentLengt
     auto segments = segmentation(partitionsNumber, 0.0, density, minSegmentLength);
     auto margins = segmentation(partitionsNumber, density, 1.0, minMargin);
 
-    std::vector<float> processedSegment;
+    std::vector<float> processedSegments;
+    processedSegments.reserve(2 * (partitionsNumber - 1));
 
     for (int i = 0; i < segments.size(); ++i) {
-        processedSegment.push_back(segments[i]);
-        processedSegment.push_back(margins[i]);
+        processedSegments.push_back(segments[i]);
+        processedSegments.push_back(margins[i]);
     }
 
-    return processedSegment;
+    return processedSegments;
 }
 
 PlanetOrbit* OrbitGenerator::generate() {
@@ -76,7 +79,7 @@ PlanetOrbit* OrbitGenerator::generate() {
      */
 
     auto asymptoticDensity = [](float t) {
-        return (float) (1.25 - (2.f / PI) * std::atan((t + 14) * 0.05));
+        return 1.25f - (2.f / PI) * std::atan((t + 14.f) * 0.05f);
     };
 
     int score = *parentGameScene()->getScore();
