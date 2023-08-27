@@ -16,7 +16,8 @@ class MenuLayer: public Layer {
 public:
     enum class Flag {
         Open,
-        Close
+        Close,
+        BlockClose
     };
 
     using CloseAction = std::function<void()>;
@@ -42,8 +43,33 @@ protected:
      */
     bool close();
 
+    /**
+     * Blocks the ability to close the menu
+     */
+    void blockClose();
+
+    /**
+     * Unblocks the ability to close the menu
+     */
+    void unblockClose();
+
+    /**
+     * @return `true` is close is blocked, `false` otherwise
+     */
+    bool isCloseBlocked() const;
+
+    /**
+     * The menu can be closed if the following conditions
+     * are met:
+     * 1. The menu is not being closed;
+     * 2. User block is disabled (close is unblocked);
+     * @return `true` if the menu can be closed, `false`
+     * otherwise.
+     */
+    bool canBeClosed() const;
+
 private:
-    std::bitset<2> m_flags;
+    std::bitset<3> m_flags;
 };
 } // UI
 

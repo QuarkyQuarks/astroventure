@@ -55,6 +55,7 @@ private:
 void MenuLayer::onShow() {
     Layer::onShow();
     setFlag(Flag::Open);
+    unblockClose();
     getContainer()->addAnimation(std::make_unique<MenuAnimation>(this, getOpacity(), 1.0f));
 }
 
@@ -82,6 +83,9 @@ void MenuLayer::setCloseWidget(Widget *widget, const CloseAction &closeAction) {
 }
 
 bool MenuLayer::close() {
+    if (!canBeClosed())
+        return false;
+
     auto &animations = getContainer()->getAnimations();
     auto anim = animations.empty() ? nullptr : dynamic_cast<MenuAnimation*>(animations.front().get());
 
@@ -103,5 +107,21 @@ bool MenuLayer::close() {
     getContainer()->addAnimation(std::move(closeAnim));
 
     return true;
+}
+
+void MenuLayer::blockClose() {
+    setFlag(Flag::BlockClose);
+}
+
+void MenuLayer::unblockClose() {
+    setFlag(Flag::BlockClose, false);
+}
+
+bool MenuLayer::isCloseBlocked() const {
+    return isFlagEnabled(Flag::BlockClose);
+}
+
+bool MenuLayer::canBeClosed() const {
+    return !isCloseBlocked() && !isFlagEnabled(Flag::Close);
 }
 } // UI
