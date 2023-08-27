@@ -51,21 +51,18 @@ private:
     std::vector<float> m_normals;
     std::vector<float> m_texCoords;
 
+    std::vector<float> m_zPositions;
+
     std::vector<std::size_t> m_triangles;
 
-    // TODO: vector
-    tulz::Array<float> m_zPositions;
-
 private:
-    Cameraman &m_cameraman;
     glm::mat4 m_projection;
     glm::mat4 m_modelView;
 
-    float m_previousFrame;
-    float m_currentTime;
-
     std::vector<float> m_frequency;
     std::vector<float> m_phase;
+
+    GameScene &m_scene;
 };
 
 #endif //ASTROVENTURE_GAMEBACKGROUND_H
