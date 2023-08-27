@@ -52,5 +52,26 @@ void Layer::updateColorScheme() {
 
 void Layer::onShow() {
     updateColorScheme();
+    unmuteSubscriptions();
+}
+
+void Layer::onHide() {
+    muteSubscriptions();
+}
+
+USubscription& Layer::addSubscription(USubscription subscription) {
+    return m_subscriptions.emplace_back(std::move(subscription));
+}
+
+void Layer::muteSubscriptions() {
+    forEachSubscription([](auto &s) { s->mute(); });
+}
+
+void Layer::unmuteSubscriptions() {
+    forEachSubscription([](auto &s) { s->unmute(); });
+}
+
+void Layer::unsubscribeSubscriptions() {
+    forEachSubscription([](auto &s) { s->unsubscribe(); });
 }
 } // UI
