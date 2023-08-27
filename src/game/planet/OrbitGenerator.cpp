@@ -31,7 +31,7 @@ static std::vector<float> segmentsGenerator(float density, float minSegmentLengt
 
     auto segmentation = [](int gridsNumber, float lowerEdge, float upperEdge, float offset) {
         std::vector<float> partitions {lowerEdge, upperEdge};
-        partitions.reserve(gridsNumber);
+        partitions.reserve(gridsNumber + 2);
 
         for (int i = 0; i < gridsNumber; ++i) {
             float segment = Random::get(lowerEdge + offset, upperEdge - offset);
@@ -47,7 +47,7 @@ static std::vector<float> segmentsGenerator(float density, float minSegmentLengt
         std::sort(partitions.begin(), partitions.end());
 
         std::vector<float> segments;
-        segments.reserve(gridsNumber - 1);
+        segments.reserve(partitions.size() - 1);
 
         for (int i = 0; i < (partitions.size() - 1); ++i) {
             segments.push_back(partitions[i + 1] - partitions[i]);
@@ -60,7 +60,7 @@ static std::vector<float> segmentsGenerator(float density, float minSegmentLengt
     auto margins = segmentation(partitionsNumber, density, 1.0, minMargin);
 
     std::vector<float> processedSegments;
-    processedSegments.reserve(2 * (partitionsNumber - 1));
+    processedSegments.reserve(2 * segments.size());
 
     for (int i = 0; i < segments.size(); ++i) {
         processedSegments.push_back(segments[i]);
