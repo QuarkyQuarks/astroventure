@@ -86,7 +86,6 @@ set(Astroventure_SOURCES ${SoLoud_SOURCES}
         src/game/ui/AnimTools.cpp src/game/ui/AnimTools.h
         src/game/ui/menu/SettingsLayer.cpp src/game/ui/menu/SettingsLayer.h
         src/game/ui/menu/MenuLayer.cpp src/game/ui/menu/MenuLayer.h
-        src/game/ui/menu/MenuBackground.cpp src/game/ui/menu/MenuBackground.h
         src/game/ui/menu/PauseLayer.cpp src/game/ui/menu/PauseLayer.h
         src/game/ui/menu/GameOverLayer.cpp src/game/ui/menu/GameOverLayer.h
         src/game/ui/ButtonAnimation.cpp src/game/ui/ButtonAnimation.h
