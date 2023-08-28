@@ -12,6 +12,7 @@
 #include <tulz/observer/Subject.h>
 
 class GameScene;
+class GameRenderer;
 
 namespace UI {
 class GameUIScene: public Widgets::Scene {
@@ -28,6 +29,8 @@ public:
     void setSize(int width, int height) override;
 
     GameScene* parentGameScene() const;
+    GameRenderer* parentGameRenderer() const;
+
     MenuLayer* firstMenuLayer() const;
 
     tulz::Subscription<int, int> addOnSizeChangedListener(const tulz::Observer<int, int> &listener);

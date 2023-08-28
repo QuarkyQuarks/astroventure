@@ -33,6 +33,12 @@ GameScene* GameUIScene::parentGameScene() const {
     return assert_cast<GameScene*>(getParentScene());
 }
 
+GameRenderer* GameUIScene::parentGameRenderer() const {
+    auto parent = findParent<GameRenderer*>();
+    assert(parent != nullptr);
+    return parent;
+}
+
 MenuLayer* GameUIScene::firstMenuLayer() const {
     for (int i = 1; i < getLayersCount(); ++i)
         if (auto menuLayer = dynamic_cast<MenuLayer*>(layerAt(i)); menuLayer)
