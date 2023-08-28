@@ -8,11 +8,15 @@
 
 using namespace algine;
 
+class GameScene;
+
 class OrbitGenerator: public Object, public Loadable {
 public:
     explicit OrbitGenerator(Object *parent = defaultParent()); // TODO: PlanetManager as parent
 
     PlanetOrbit* generate();
+
+    GameScene* parentGameScene();
 
     LoaderConfig resourceLoaderConfig() override;
 
