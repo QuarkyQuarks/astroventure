@@ -4,6 +4,7 @@
 #include "game/ui/Layer.h"
 
 #include <algine/core/widgets/Widget.h>
+#include <algine/std/Blur.h>
 
 #include <string_view>
 #include <functional>
@@ -14,23 +15,28 @@ class GameUIScene;
 
 class MenuLayer: public Layer {
 public:
+    MenuLayer(GameUIScene *scene, std::string_view file);
+
+    /**
+     * Draws the current layer. If necessary, updates the background.
+     */
+    void draw(const WidgetDisplayOptions &options) override;
+
+protected:
     enum class Flag {
         Open,
         Close,
-        BlockClose
+        BlockClose,
+        BackgroundUpdateRequired
     };
 
     using CloseAction = std::function<void()>;
 
-public:
-    MenuLayer(GameUIScene *scene, std::string_view file);
+    class MenuAnimation;
 
-    bool isAnimationActive() const;
-
+protected:
     void setFlag(Flag flag, bool enabled = true);
     bool isFlagEnabled(Flag flag) const;
-
-    //void draw(const WidgetDisplayOptions &options) override;
 
 protected:
     void onShow() override;
@@ -69,7 +75,29 @@ protected:
     bool canBeClosed() const;
 
 private:
-    std::bitset<3> m_flags;
+    /**
+     * Configures blurred background. Must be called
+     * from the constructor.
+     */
+    void cfgBackground();
+
+    void updateBackground(const WidgetDisplayOptions &options);
+
+    void requestBackgroundUpdate();
+    void cancelBackgroundUpdate();
+
+    /**
+     * Checks if background needs to be updated.
+     * @return `true` if the `Flag::BackgroundUpdateRequired`
+     * is set, `false` otherwise.
+     */
+    bool shouldUpdateBackground() const;
+
+private:
+    std::bitset<4> m_flags;
+
+private:
+    Blur *m_background;
 };
 } // UI
 
