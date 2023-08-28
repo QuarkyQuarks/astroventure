@@ -35,7 +35,7 @@ void BloomPass::setInput(Texture2D *texture) {
 }
 
 void BloomPass::render() {
-    Engine::setViewport(m_blurDimensions.x, m_blurDimensions.y);
+    Engine::setViewport(m_blurDimensions);
 
     m_searchProgram->bind();
     m_searchFb->bind();
@@ -49,7 +49,7 @@ void BloomPass::render() {
     m_blur->makeBlur(m_searchFb->getAttachedTexture2D(Framebuffer::ColorAttachmentZero));
 
     // restore the default viewport
-    Engine::setViewport(m_dimensions.x, m_dimensions.y);
+    Engine::setViewport(m_dimensions);
 }
 
 Texture2D* BloomPass::getOutput() {
