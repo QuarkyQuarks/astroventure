@@ -8,20 +8,21 @@ PauseLayer::PauseLayer(GameUIScene *scene)
 {
     auto container = getContainer();
     auto gameScene = scene->parentGameScene();
+    auto &resetAction = gameScene->getResetAction();
 
     setCloseWidget(container);
     setCloseWidget(container->findChild<Widget*>("label"));
 
     container->findChild<Widget*>("exit")->setEventListener(Event::Click, [=](Widget*, const Event&) {
-        gameScene->triggerReset();
+        gameScene->getResetAction().trigger();
         scene->showLayerInsteadOf(scene->start, scene->game);
     });
 
-    auto onResetSub = gameScene->addOnResetListener([this] {
+    auto onResetSub = resetAction.addOnTriggerListener([this] {
         blockClose();
     });
 
-    auto onResetCompletedSub = gameScene->addOnResetCompletedListener([this] {
+    auto onResetCompletedSub = resetAction.addOnCompletedListener([this] {
         unblockClose();
         close();
     });

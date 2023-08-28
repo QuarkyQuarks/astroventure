@@ -46,7 +46,7 @@ GameLayer::GameLayer(GameUIScene *scene)
         crystalsChanged();
     });
 
-    gameScene->addOnResetListener([this] {
+    gameScene->getResetAction().addOnTriggerListener([this] {
         reset();
     });
 

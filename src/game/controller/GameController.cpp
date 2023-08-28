@@ -25,7 +25,7 @@ GameController::GameController(GameScene &gameScene)
         generatePlanets(planet->getIndex());
     });
 
-    gameScene.addOnResetListener([this] {
+    gameScene.getResetAction().addOnTriggerListener([this] {
         reset();
     });
 }
@@ -174,7 +174,7 @@ void GameController::afterScroll() {
 }
 
 void GameController::reset() {
-    m_gameScene.beginReset();
+    m_gameScene.getResetAction().lock();
 
     unblockLaunch();
 
@@ -215,7 +215,7 @@ void GameController::resetPlanets() {
             if (planets.count() == planetCount) {
                 resetSpacecraft();
                 resetCamera();
-                m_gameScene.endReset();
+                m_gameScene.getResetAction().unlock();
             }
         }, flags, properties);
     }

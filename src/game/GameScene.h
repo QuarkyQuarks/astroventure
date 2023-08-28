@@ -20,6 +20,7 @@
 #include "spacecraft/SpacecraftManager.h"
 #include "scheme/ColorSchemeManager.h"
 #include "controller/Controller.h"
+#include "action/StateAction.h"
 #include "SettingsManager.h"
 #include "Cameraman.h"
 
@@ -38,14 +39,6 @@ public:
     explicit GameScene(GameContent *parent);
 
     void render() override;
-
-    void pause();
-
-    /**
-     * Triggers a game reset.
-     * @note This function must be called from the main rendering thread.
-     */
-    void triggerReset();
 
     LoaderConfig resourceLoaderConfig() override;
 
@@ -69,35 +62,9 @@ public:
     ObservableInt& getScore();
     ObservableInt& getCrystals();
 
-    /**
-     * The event `onReset` is triggered by the `triggerReset` function.
-     * @param listener The listener function to be added.
-     * @return Subscription object representing the added listener.
-     */
-    Subscription<> addOnResetListener(const Observer<> &listener);
-
-    /**
-     * The event `onResetCompleted` is triggered when the reset is completed.
-     * @param listener The listener function to be added.
-     * @return Subscription object representing the added listener.
-     */
-    Subscription<> addOnResetCompletedListener(const Observer<> &listener);
-
-    /**
-     * Use this function to declare that the reset of some object begins.
-     * Must be called in an on reset listener.
-     * @note This function must be called from the main rendering thread.
-     */
-    void beginReset();
-
-    /**
-     * Use this function to indicate that the reset of some object has ended.
-     * This function triggers a check to determine if the number of `beginReset`
-     * calls is equal to the number of `endReset` calls. If they are equal, the
-     * `onResetCompleted` event will be triggered.
-     * @note This function may be called from any thread.
-     */
-    void endReset();
+    StateAction& getResetAction();
+    StateAction& getPauseAction();
+    StateAction& getResumeAction();
 
     /**
      * @return previous frame rendering time in seconds
@@ -124,9 +91,9 @@ private:
     ObservableInt m_crystals;
 
 private:
-    Subject<> m_onReset;
-    Subject<> m_onResetCompleted;
-    std::atomic_int m_resetStatus;
+    StateAction m_reset;
+    StateAction m_pause;
+    StateAction m_resume;
 
 private:
     Cameraman m_cameraman;
