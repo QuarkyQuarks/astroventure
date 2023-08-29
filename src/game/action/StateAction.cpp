@@ -22,11 +22,17 @@ void StateAction::lock() {
 }
 
 void StateAction::unlock() {
-    if (--m_lockCount == 0) {
+    if (auto count = --m_lockCount; count == 0) {
         m_gameScene.getParentWindow()->invokeLater([this] {
             m_onCompleted.notify();
         });
+    } else if (count < 0) {
+        throw std::runtime_error("The number of unlocks is greater than the number of locks");
     }
+}
+
+bool StateAction::isLocked() const {
+    return m_lockCount != 0;
 }
 
 Subscription<> StateAction::addOnTriggerListener(const Observer<> &listener) {

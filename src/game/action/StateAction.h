@@ -41,6 +41,11 @@ public:
     void unlock();
 
     /**
+     * @return `true` if the action is locked, `false` otherwise.
+     */
+    bool isLocked() const;
+
+    /**
      * The event `onTrigger` is triggered by the `trigger` function.
      * @param listener The listener function to be added.
      * @return Subscription object representing the added listener.
