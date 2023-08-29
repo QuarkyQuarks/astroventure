@@ -84,10 +84,10 @@ void GameController::generatePlanets(int count) {
 }
 
 void GameController::triggerScroll(Planet *dst) {
-    constexpr long waitMs = 50;
+    constexpr float waitMs = 50;
 
     m_scrollDetails = {
-        .startTimeMs = Engine::timeFromStart() + waitMs,
+        .startTimeMs = m_gameScene.getGameTime() + waitMs,
         .totalDistance = dst->getY() - m_gameScene.getPlanets()[0]->getY(),
         .dst = dst
     };
@@ -108,10 +108,10 @@ bool GameController::isScrollLocked() const {
 }
 
 void GameController::beforeScroll() {
-    const long time = Engine::timeFromStart();
-    const long deltaTime = time - m_scrollDetails.startTimeMs;
+    const float time = m_gameScene.getGameTime();
+    const float deltaTime = time - m_scrollDetails.startTimeMs;
 
-    if (deltaTime < 0)
+    if (deltaTime < 0.0f)
         return;
 
     if (!isScrollLocked()) {
@@ -121,16 +121,16 @@ void GameController::beforeScroll() {
 }
 
 void GameController::onScroll() {
-    constexpr long duration = 1000;
+    constexpr float duration = 1000;
 
-    const long time = Engine::timeFromStart();
-    const long deltaTime = time - m_scrollDetails.startTimeMs;
+    const float time = m_gameScene.getGameTime();
+    const float deltaTime = time - m_scrollDetails.startTimeMs;
 
     auto f = [](float x) -> float {
         return -std::pow(x - 1, 4.0f) + 1;
     };
 
-    float posX = static_cast<float>(deltaTime) / static_cast<float>(duration);
+    float posX = deltaTime / duration;
 
     if (posX >= 1.0f) {
         scroll = nullptr;

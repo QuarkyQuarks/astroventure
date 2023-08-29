@@ -63,7 +63,7 @@ public:
 private:
     struct {
         int lockCount {0};
-        long startTimeMs {0};
+        float startTimeMs {0};
         float currentDistance {0};
         float totalDistance {0};
         Planet *dst {};
