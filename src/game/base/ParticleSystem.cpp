@@ -12,7 +12,7 @@ GameScene* ParticleSystem::parentGameScene() const {
 
 void ParticleSystem::update() {
     auto scene = parentGameScene();
-    auto time = scene->getFrameTimeSec();
+    auto time = scene->getScaledFrameTimeSec();
 
     auto prevIt = m_particles.before_begin();
 
