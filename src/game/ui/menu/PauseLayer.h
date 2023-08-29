@@ -7,6 +7,9 @@ namespace UI {
 class PauseLayer: public MenuLayer {
 public:
     explicit PauseLayer(GameUIScene *scene);
+
+protected:
+    void onHide() override;
 };
 } // UI
 

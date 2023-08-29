@@ -15,6 +15,8 @@ GameLayer::GameLayer(GameUIScene *scene)
     : Layer(scene),
       m_controller(*scene->parentGameScene())
 {
+    auto gameScene = scene->parentGameScene();
+
     auto container = Widget::constructFromXMLFile<Container*>("ui/GameContent.xml", this);
     setContainer(container);
 
@@ -24,8 +26,8 @@ GameLayer::GameLayer(GameUIScene *scene)
     });
 
     auto pause = container->findChild<Widget*>("pause");
-    pause->setEventListener(Event::Click, [scene](Widget*, const Event&) {
-        scene->pause->show();
+    pause->setEventListener(Event::Click, [gameScene](Widget*, const Event&) {
+        gameScene->getPauseAction().trigger();
     });
 
     AnimTools::setButtonAnimation(pause);
@@ -35,8 +37,6 @@ GameLayer::GameLayer(GameUIScene *scene)
 
     m_scoreContainer = container->findChild<Container*>("score_container");
     m_crystalsContainer = container->findChild<Container*>("crystals_container");
-
-    auto gameScene = scene->parentGameScene();
 
     gameScene->getScore().subscribe([this](int score) {
         scoreChanged();

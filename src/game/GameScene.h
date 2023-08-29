@@ -83,6 +83,37 @@ public:
      */
     int getFrameTime() const;
 
+    /**
+     * Sets the time scale. The default value is 1.0.
+     * @param scale The non-negative scale value.
+     */
+    void setTimeScale(float scale);
+
+    float getTimeScale() const;
+
+    /**
+     * Starts a time scaling animation.
+     * @param dstScale The destination time scale value.
+     * @param durationMs The animation duration in milliseconds.
+     * @param callback The callback that will be called
+     * when the animation is finished.
+     */
+    void startTimeScaling(float dstScale, int durationMs = 200, std::function<void()> callback = {});
+
+    /**
+     * The same as `getFrameTimeSec` but scaled.
+     * @return previous frame rendering time in seconds
+     * with applied time scaling.
+     */
+    float getScaledFrameTimeSec() const;
+
+    /**
+     * The same as `getFrameTime` but scaled.
+     * @return previous frame rendering time in milliseconds
+     * with applied time scaling.
+     */
+    float getScaledFrameTime() const;
+
 private:
     /**
      * Triggers 3 planets generation & spacecraft loading
@@ -130,6 +161,7 @@ private:
 private:
     long m_prevFrameTime;
     int m_prevDeltaFrameTime;
+    float m_timeScale;
 };
 
 #endif //ASTROVENTURE_GAMESCENE_H
