@@ -67,6 +67,13 @@ public:
     StateAction& getResumeAction();
 
     /**
+     * Adds a listener that will be called on each frame rendering.
+     * @param listener The listener to be added.
+     * @return Subscription object representing the added listener.
+     */
+    Subscription<> addOnTickListener(const Observer<> &listener);
+
+    /**
      * @return previous frame rendering time in seconds
      */
     float getFrameTimeSec() const;
@@ -94,6 +101,9 @@ private:
     StateAction m_reset;
     StateAction m_pause;
     StateAction m_resume;
+
+private:
+    Subject<> m_onTick;
 
 private:
     Cameraman m_cameraman;

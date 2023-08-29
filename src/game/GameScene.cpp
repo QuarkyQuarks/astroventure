@@ -65,6 +65,8 @@ void GameScene::render() {
     m_cameraman.animate();
     m_controller->update();
     m_renderer->render();
+
+    m_onTick.notify();
 }
 
 LoaderConfig GameScene::resourceLoaderConfig() {
@@ -145,6 +147,10 @@ StateAction& GameScene::getPauseAction() {
 
 StateAction& GameScene::getResumeAction() {
     return m_resume;
+}
+
+Subscription<> GameScene::addOnTickListener(const Observer<> &listener) {
+    return m_onTick.subscribe(listener);
 }
 
 void GameScene::resetProgress() {
