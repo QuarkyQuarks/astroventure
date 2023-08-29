@@ -46,11 +46,11 @@ void Cameraman::home() {
 
 void Cameraman::intro() {
     if (m_animationStartTime == 0.0f) {
-        m_animationStartTime = static_cast<float>(Engine::timeFromStart());
+        m_animationStartTime = m_scene.getGameTime();
         return;
     }
 
-    auto currentFrame = static_cast<float>(Engine::timeFromStart());
+    auto currentFrame = m_scene.getGameTime();
     m_animationPos = glm::min((currentFrame - m_animationStartTime) / 2000.0f, 1.0f);
 
     m_camera.setPos(m_camTrajectory.getPoint(m_animationPos));
