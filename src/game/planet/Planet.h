@@ -64,7 +64,6 @@ private:
     float m_radius {0.1f};
     float m_mass {};
     float m_angularVelocity {}; // rad per sec
-    float m_previousAngle {};
 
     bool m_hasAtmosphere {true};
     float m_atmosphereRadius {0.11f};

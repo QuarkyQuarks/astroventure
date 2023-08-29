@@ -1,8 +1,8 @@
 #include "Planet.h"
 #include "PlanetGenerator.h"
 #include "PlanetOrbit.h"
-#include "game/math/MathConstants.h"
 #include "game/math/VecTools.h"
+#include "game/GameScene.h"
 
 #include <algine/core/Engine.h>
 #include <algine/core/buffers/ArrayBuffer.h>
@@ -97,12 +97,8 @@ PlanetOrbit* Planet::getOrbit() {
 }
 
 void Planet::update() {
-    // 1000ms == 1s
-    float rad = fmodf((float) Engine::timeFromStart() / 1000.0f * m_angularVelocity, TWO_PI);
-    float delta = rad - m_previousAngle;
-    m_previousAngle = rad;
-
-    changeClusterRoll(delta);
+    float deltaRoll = parentGameScene()->getScaledFrameTimeSec() * m_angularVelocity;
+    changeClusterRoll(deltaRoll);
 
     auto orbit = getOrbit();
 
