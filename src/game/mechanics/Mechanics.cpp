@@ -62,7 +62,6 @@ void Mechanics::update() {
         spacecraft->rotate();
         spacecraft->transform();
 
-        // TODO: move this condition to flight() ?
         if (!inBounds(spacecraft->getPos())) {
             destroyed();
         }
@@ -107,8 +106,8 @@ void Mechanics::takeOff() {
     deltaVel.y = ODE::linear(acceleration.y, stepInterval);
     spacecraft->changeVelocity(deltaVel);
 
-    auto &planetPos = m_scene.getPlanets()[0]->getPos();
-    auto distance = glm::distance(spacecraft->getPos(), planetPos);
+    auto planet = m_scene.getPlanets().front();
+    auto distance = glm::distance(spacecraft->getPos(), planet->getPos());
     constexpr num_t takeOffDist = 0.21;
 
     if (distance >= takeOffDist && !(startingAngle < glm::pi<num_t>() * 2 && startingAngle > glm::pi<num_t>())) {
@@ -319,7 +318,7 @@ void Mechanics::landing() {
     deltaPos.y = ODE::linear(spacecraft->getVelocity().y, stepInterval);
     spacecraft->changePos(deltaPos);
 
-    constexpr num_t accelScalar = -1.5;
+    constexpr num_t accelScalar = -1.0;
     num_t roll = spacecraft->getRoll() + PI / 2;
     const vec2 acceleration {accelScalar * std::cos(roll), accelScalar * std::sin(roll)};
 
