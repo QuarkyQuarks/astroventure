@@ -88,7 +88,7 @@ void Mechanics::launch() {
 }
 
 void Mechanics::takeOff() {
-    auto stepInterval = m_scene.getFrameTimeSec();
+    auto stepInterval = m_scene.getScaledFrameTimeSec();
     auto spacecraft = m_scene.getSpacecraft();
     auto &velocity = spacecraft->getVelocity();
 
@@ -182,15 +182,15 @@ void Mechanics::trajectoryCalc() {
         // TODO: erase unused velocities?
     }
 
-    m_trajectory.flightStart = static_cast<num_t>(Engine::timeFromStart()) / 1000.0;
+    m_trajectory.flightStart = m_scene.getGameTimeSec();
 }
 
 void Mechanics::flight() {
     //motion
-    auto currentTime = static_cast<num_t>(Engine::timeFromStart()) / 1000.0;
+    auto currentTime = m_scene.getGameTimeSec();
     num_t timeFromStart = currentTime - m_trajectory.flightStart;
 
-    constexpr num_t E = 0.01; // change for non-constant case
+    constexpr num_t E = 0.01; // TODO: change for non-constant case
 
     auto id = static_cast<int>(timeFromStart / E);
     num_t timeRatio = (timeFromStart - static_cast<num_t>(id) * E) / E;
@@ -310,7 +310,7 @@ void Mechanics::landing() {
     auto spacecraft = m_scene.getSpacecraft();
     auto planet = m_trajectory.landingPlanet;
 
-    auto stepInterval = m_scene.getFrameTimeSec();
+    auto stepInterval = m_scene.getScaledFrameTimeSec();
 
     //radial translation
     vec3 deltaPos {0, 0, 0};

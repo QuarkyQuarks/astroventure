@@ -160,7 +160,7 @@ glm::mat4 PlanetOrbit::falling(int platformID, int chunkID) {
 
         //auto angularVelocity = Game::getInstance()->getPlanet(1)->getAngularVelocity();  TODO
         const float acceleration = -3.0f; //* angularVelocity * angularVelocity;
-        auto stepInterval = scene->getFrameTimeSec();
+        auto stepInterval = scene->getScaledFrameTimeSec();
 
         radius += velocity * stepInterval;
         velocity += acceleration * stepInterval;
