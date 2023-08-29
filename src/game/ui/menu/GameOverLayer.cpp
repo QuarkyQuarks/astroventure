@@ -9,7 +9,7 @@ GameOverLayer::GameOverLayer(GameUIScene *scene)
     auto clickAction = [scene, this](Widget*, const Event&) {
         if (!canBeClosed())
             return;
-        scene->parentGameScene()->triggerReset();
+        scene->parentGameScene()->getResetAction().trigger();
         scene->showLayerInsteadOf(scene->start, scene->game);
     };
 
@@ -18,16 +18,17 @@ GameOverLayer::GameOverLayer(GameUIScene *scene)
     container->findChild<Widget*>("label")->setEventListener(Event::Click, clickAction);
 
     auto gameScene = scene->parentGameScene();
+    auto &resetAction = gameScene->getResetAction();
 
     gameScene->getMechanics().addOnDestroyedListener([this] {
         show();
     });
 
-    auto onResetSub = gameScene->addOnResetListener([this] {
+    auto onResetSub = resetAction.addOnTriggerListener([this] {
         blockClose();
     });
 
-    auto onResetCompletedSub = gameScene->addOnResetCompletedListener([this] {
+    auto onResetCompletedSub = resetAction.addOnCompletedListener([this] {
         unblockClose();
         close();
     });

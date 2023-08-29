@@ -26,7 +26,9 @@ GameScene::GameScene(GameContent *parent)
     : Scene(parent),
       m_score(0),
       m_crystals(0),
-      m_resetStatus(0),
+      m_reset(*this),
+      m_pause(*this),
+      m_resume(*this),
       m_renderer(new GameRenderer(this)),
       m_cameraman(*this),
       m_mechanics(*this),
@@ -40,7 +42,8 @@ GameScene::GameScene(GameContent *parent)
       m_controller(),
       m_planets(3),
       m_prevFrameTime(Engine::timeFromStart()),
-      m_prevDeltaFrameTime(0)
+      m_prevDeltaFrameTime(0),
+      m_timeScale(1.0f)
 {
     m_mechanics.addOnGroundListener([this](Planet*) {
         ++m_score;
@@ -50,8 +53,21 @@ GameScene::GameScene(GameContent *parent)
         ++m_crystals;
     });
 
-    addOnResetListener([this] {
+    m_reset.addOnTriggerListener([this] {
         resetProgress();
+        setTimeScale(1.0f);
+    });
+
+    m_pause.addOnTriggerListener([this] {
+        m_pause.lock();
+
+        startTimeScaling(0.0f, 400, [this] {
+            m_pause.unlock();
+        });
+    });
+
+    m_resume.addOnCompletedListener([this] {
+        startTimeScaling(1.0f, 400);
     });
 }
 
@@ -64,21 +80,8 @@ void GameScene::render() {
     m_cameraman.animate();
     m_controller->update();
     m_renderer->render();
-}
 
-void GameScene::pause() {
-
-}
-
-void GameScene::triggerReset() {
-    // This call is needed to prevent potential `onResetCompleted`
-    // triggering while `onReset` event is being sent
-    beginReset();
-
-    m_onReset.notify();
-
-    // Triggers `onResetCompleted` if needed
-    endReset();
+    m_onTick.notify();
 }
 
 LoaderConfig GameScene::resourceLoaderConfig() {
@@ -149,24 +152,20 @@ ObservableInt& GameScene::getCrystals() {
     return m_crystals;
 }
 
-Subscription<> GameScene::addOnResetListener(const Observer<> &listener) {
-    return m_onReset.subscribe(listener);
+StateAction& GameScene::getResetAction() {
+    return m_reset;
 }
 
-Subscription<> GameScene::addOnResetCompletedListener(const Observer<> &listener) {
-    return m_onResetCompleted.subscribe(listener);
+StateAction& GameScene::getPauseAction() {
+    return m_pause;
 }
 
-void GameScene::beginReset() {
-    ++m_resetStatus;
+StateAction& GameScene::getResumeAction() {
+    return m_resume;
 }
 
-void GameScene::endReset() {
-    if (--m_resetStatus == 0) {
-        getParentWindow()->invokeLater([this] {
-            m_onResetCompleted.notify();
-        });
-    }
+Subscription<> GameScene::addOnTickListener(const Observer<> &listener) {
+    return m_onTick.subscribe(listener);
 }
 
 void GameScene::resetProgress() {
@@ -181,6 +180,59 @@ float GameScene::getFrameTimeSec() const {
 
 int GameScene::getFrameTime() const {
     return m_prevDeltaFrameTime;
+}
+
+void GameScene::setTimeScale(float scale) {
+    assert(scale >= 0.0f);
+    m_timeScale = scale;
+}
+
+float GameScene::getTimeScale() const {
+    return m_timeScale;
+}
+
+void GameScene::startTimeScaling(float dstScale, int durationMs, std::function<void()> callback) {
+    auto startTime = Engine::timeFromStart();
+
+    auto f = [](float t) -> float {
+        return std::pow(t, 1.5f);
+    };
+
+    auto f_inv = [](float t) -> float {
+        return std::pow(t, 1.0f / 1.5f);
+    };
+
+    auto srcX = f_inv(getTimeScale());
+    auto dstX = f_inv(dstScale);
+
+    auto sub = new Subscription<>();
+    *sub = addOnTickListener([=, this, callback = std::move(callback)] {
+        auto elapsed = static_cast<float>(Engine::timeFromStart() - startTime);
+        float t = glm::clamp(elapsed / static_cast<float>(durationMs), 0.0f, 1.0f);
+
+        auto x = glm::mix(srcX, dstX, t);
+        auto y = f(x);
+
+        setTimeScale(y);
+
+        if (t == 1.0f) {
+            if (callback != nullptr) {
+                callback();
+            }
+
+            sub->unsubscribe();
+
+            delete sub;
+        }
+    });
+}
+
+float GameScene::getScaledFrameTimeSec() const {
+    return getFrameTimeSec() * m_timeScale;
+}
+
+float GameScene::getScaledFrameTime() const {
+    return static_cast<float>(getFrameTime()) * m_timeScale;
 }
 
 void GameScene::loadResources() {

@@ -8,25 +8,50 @@ PauseLayer::PauseLayer(GameUIScene *scene)
 {
     auto container = getContainer();
     auto gameScene = scene->parentGameScene();
+    auto &resetAction = gameScene->getResetAction();
+    auto &pauseAction = gameScene->getPauseAction();
+    auto &resumeAction = gameScene->getResumeAction();
 
-    setCloseWidget(container);
-    setCloseWidget(container->findChild<Widget*>("label"));
+    auto closeAction = [&resumeAction] {
+        resumeAction.trigger();
+    };
+
+    setCloseWidget(container, closeAction);
+    setCloseWidget(container->findChild<Widget*>("label"), closeAction);
 
     container->findChild<Widget*>("exit")->setEventListener(Event::Click, [=](Widget*, const Event&) {
-        gameScene->triggerReset();
+        gameScene->getResetAction().trigger();
         scene->showLayerInsteadOf(scene->start, scene->game);
     });
 
-    auto onResetSub = gameScene->addOnResetListener([this] {
+    pauseAction.addOnCompletedListener([this] {
+        show();
+    });
+
+    auto onResetSub = resetAction.addOnTriggerListener([this] {
         blockClose();
     });
 
-    auto onResetCompletedSub = gameScene->addOnResetCompletedListener([this] {
+    auto onResetCompletedSub = resetAction.addOnCompletedListener([this] {
         unblockClose();
         close();
     });
 
-    addSubscriptions(onResetSub, onResetCompletedSub);
+    auto onResumeSub = resumeAction.addOnTriggerListener([&resumeAction] {
+        resumeAction.lock();
+    });
+
+    addSubscriptions(onResetSub, onResetCompletedSub, onResumeSub);
     muteSubscriptions();
+}
+
+void PauseLayer::onHide() {
+    MenuLayer::onHide();
+
+    auto &resumeAction = parentGameUIScene()->parentGameScene()->getResumeAction();
+
+    if (resumeAction.isLocked()) {
+        resumeAction.unlock();
+    }
 }
 } // UI

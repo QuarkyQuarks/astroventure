@@ -20,6 +20,7 @@
 #include "spacecraft/SpacecraftManager.h"
 #include "scheme/ColorSchemeManager.h"
 #include "controller/Controller.h"
+#include "action/StateAction.h"
 #include "SettingsManager.h"
 #include "Cameraman.h"
 
@@ -38,14 +39,6 @@ public:
     explicit GameScene(GameContent *parent);
 
     void render() override;
-
-    void pause();
-
-    /**
-     * Triggers a game reset.
-     * @note This function must be called from the main rendering thread.
-     */
-    void triggerReset();
 
     LoaderConfig resourceLoaderConfig() override;
 
@@ -69,35 +62,16 @@ public:
     ObservableInt& getScore();
     ObservableInt& getCrystals();
 
+    StateAction& getResetAction();
+    StateAction& getPauseAction();
+    StateAction& getResumeAction();
+
     /**
-     * The event `onReset` is triggered by the `triggerReset` function.
-     * @param listener The listener function to be added.
+     * Adds a listener that will be called on each frame rendering.
+     * @param listener The listener to be added.
      * @return Subscription object representing the added listener.
      */
-    Subscription<> addOnResetListener(const Observer<> &listener);
-
-    /**
-     * The event `onResetCompleted` is triggered when the reset is completed.
-     * @param listener The listener function to be added.
-     * @return Subscription object representing the added listener.
-     */
-    Subscription<> addOnResetCompletedListener(const Observer<> &listener);
-
-    /**
-     * Use this function to declare that the reset of some object begins.
-     * Must be called in an on reset listener.
-     * @note This function must be called from the main rendering thread.
-     */
-    void beginReset();
-
-    /**
-     * Use this function to indicate that the reset of some object has ended.
-     * This function triggers a check to determine if the number of `beginReset`
-     * calls is equal to the number of `endReset` calls. If they are equal, the
-     * `onResetCompleted` event will be triggered.
-     * @note This function may be called from any thread.
-     */
-    void endReset();
+    Subscription<> addOnTickListener(const Observer<> &listener);
 
     /**
      * @return previous frame rendering time in seconds
@@ -108,6 +82,37 @@ public:
      * @return previous frame rendering time in milliseconds
      */
     int getFrameTime() const;
+
+    /**
+     * Sets the time scale. The default value is 1.0.
+     * @param scale The non-negative scale value.
+     */
+    void setTimeScale(float scale);
+
+    float getTimeScale() const;
+
+    /**
+     * Starts a time scaling animation.
+     * @param dstScale The destination time scale value.
+     * @param durationMs The animation duration in milliseconds.
+     * @param callback The callback that will be called
+     * when the animation is finished.
+     */
+    void startTimeScaling(float dstScale, int durationMs = 200, std::function<void()> callback = {});
+
+    /**
+     * The same as `getFrameTimeSec` but scaled.
+     * @return previous frame rendering time in seconds
+     * with applied time scaling.
+     */
+    float getScaledFrameTimeSec() const;
+
+    /**
+     * The same as `getFrameTime` but scaled.
+     * @return previous frame rendering time in milliseconds
+     * with applied time scaling.
+     */
+    float getScaledFrameTime() const;
 
 private:
     /**
@@ -124,9 +129,12 @@ private:
     ObservableInt m_crystals;
 
 private:
-    Subject<> m_onReset;
-    Subject<> m_onResetCompleted;
-    std::atomic_int m_resetStatus;
+    StateAction m_reset;
+    StateAction m_pause;
+    StateAction m_resume;
+
+private:
+    Subject<> m_onTick;
 
 private:
     Cameraman m_cameraman;
@@ -153,6 +161,7 @@ private:
 private:
     long m_prevFrameTime;
     int m_prevDeltaFrameTime;
+    float m_timeScale;
 };
 
 #endif //ASTROVENTURE_GAMESCENE_H
