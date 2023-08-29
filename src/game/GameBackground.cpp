@@ -6,8 +6,6 @@
 #include "game/GameContent.h"
 
 #include <algine/core/Engine.h>
-#include <algine/core/log/Log.h>
-#define LOG_TAG "OrbitGenerator"
 
 #include "effolkronium/random.hpp"
 #include "delaunator.hpp"
@@ -152,7 +150,7 @@ void GameBackground::animate() {
     m_modelView = translate(glm::mat4(1.0f), {0.0f, 0.0f, -VirtualZ * k});
 
     // taking into account time
-    auto time = static_cast<float>(Engine::timeFromStart()) / 1000.0f;
+    auto time = m_scene.getGameTimeSec();
 
     // vertices & normals
 

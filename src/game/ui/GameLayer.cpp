@@ -27,7 +27,13 @@ GameLayer::GameLayer(GameUIScene *scene)
 
     auto pause = container->findChild<Widget*>("pause");
     pause->setEventListener(Event::Click, [gameScene](Widget*, const Event&) {
-        gameScene->getPauseAction().trigger();
+        auto &pauseAction = gameScene->getPauseAction();
+
+        // if it's locked, then the pause is in progress,
+        // so there is no need to trigger it once more
+        if (!pauseAction.isLocked()) {
+            gameScene->getPauseAction().trigger();
+        }
     });
 
     AnimTools::setButtonAnimation(pause);

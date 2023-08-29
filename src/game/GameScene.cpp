@@ -43,7 +43,8 @@ GameScene::GameScene(GameContent *parent)
       m_planets(3),
       m_prevFrameTime(Engine::timeFromStart()),
       m_prevDeltaFrameTime(0),
-      m_timeScale(1.0f)
+      m_timeScale(1.0f),
+      m_gameTimeMs(0.0f)
 {
     m_mechanics.addOnGroundListener([this](Planet*) {
         ++m_score;
@@ -75,6 +76,8 @@ void GameScene::render() {
     auto currentFrameTime = Engine::timeFromStart();
     m_prevDeltaFrameTime = static_cast<int>(currentFrameTime - m_prevFrameTime);
     m_prevFrameTime = currentFrameTime;
+
+    m_gameTimeMs += getScaledFrameTime();
 
     Framebuffer::setClearColor(0.0f, 0.0f, 0.0f);
     m_cameraman.animate();
@@ -233,6 +236,14 @@ float GameScene::getScaledFrameTimeSec() const {
 
 float GameScene::getScaledFrameTime() const {
     return static_cast<float>(getFrameTime()) * m_timeScale;
+}
+
+float GameScene::getGameTimeSec() const {
+    return getGameTime() / 1000.0f;
+}
+
+float GameScene::getGameTime() const {
+    return m_gameTimeMs;
 }
 
 void GameScene::loadResources() {
