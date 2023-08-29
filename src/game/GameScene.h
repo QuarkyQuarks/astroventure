@@ -114,6 +114,19 @@ public:
      */
     float getScaledFrameTime() const;
 
+    /**
+     * The same as `getGameTime` but in seconds.
+     * @return The game time in seconds.
+     */
+    float getGameTimeSec() const;
+
+    /**
+     * Returns the total time that has passed in the game,
+     * i.e. the sum of the scaled time of all frames.
+     * @return The game time in milliseconds.
+     */
+    float getGameTime() const;
+
 private:
     /**
      * Triggers 3 planets generation & spacecraft loading
@@ -162,6 +175,7 @@ private:
     long m_prevFrameTime;
     int m_prevDeltaFrameTime;
     float m_timeScale;
+    float m_gameTimeMs;
 };
 
 #endif //ASTROVENTURE_GAMESCENE_H
