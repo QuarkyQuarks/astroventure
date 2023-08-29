@@ -7,7 +7,7 @@ GameOverLayer::GameOverLayer(GameUIScene *scene)
     : MenuLayer(scene, "ui/GameOver.xml")
 {
     auto clickAction = [scene, this](Widget*, const Event&) {
-        if (isFlagEnabled(MenuLayer::Flag::Close))
+        if (!canBeClosed())
             return;
         scene->parentGameScene()->triggerReset();
         scene->showLayerInsteadOf(scene->start, scene->game);
@@ -23,8 +23,16 @@ GameOverLayer::GameOverLayer(GameUIScene *scene)
         show();
     });
 
-    gameScene->addOnResetCompletedListener([this] {
+    auto onResetSub = gameScene->addOnResetListener([this] {
+        blockClose();
+    });
+
+    auto onResetCompletedSub = gameScene->addOnResetCompletedListener([this] {
+        unblockClose();
         close();
     });
+
+    addSubscriptions(onResetSub, onResetCompletedSub);
+    muteSubscriptions();
 }
 } // UI

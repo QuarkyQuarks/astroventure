@@ -1,19 +1,32 @@
 #include "PauseLayer.h"
-
-#include <algine/core/widgets/Container.h>
+#include "game/ui/GameUIScene.h"
+#include "game/GameScene.h"
 
 namespace UI {
 PauseLayer::PauseLayer(GameUIScene *scene)
     : MenuLayer(scene, "ui/Pause.xml")
 {
-    setCloseWidget(getContainer());
-    setCloseWidget(getContainer()->findChild<Widget*>("label"));
-    setCloseWidget(getContainer()->findChild<Widget*>("exit"), [scene]() {
-        // TODO
-//        auto game = Game::getInstance();
-//        game->saveProgress();
-//        game->reset();
-//        game->getUI().showLayerInsteadOf(scene->start, scene->game);
+    auto container = getContainer();
+    auto gameScene = scene->parentGameScene();
+
+    setCloseWidget(container);
+    setCloseWidget(container->findChild<Widget*>("label"));
+
+    container->findChild<Widget*>("exit")->setEventListener(Event::Click, [=](Widget*, const Event&) {
+        gameScene->triggerReset();
+        scene->showLayerInsteadOf(scene->start, scene->game);
     });
+
+    auto onResetSub = gameScene->addOnResetListener([this] {
+        blockClose();
+    });
+
+    auto onResetCompletedSub = gameScene->addOnResetCompletedListener([this] {
+        unblockClose();
+        close();
+    });
+
+    addSubscriptions(onResetSub, onResetCompletedSub);
+    muteSubscriptions();
 }
 } // UI

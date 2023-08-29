@@ -6,6 +6,8 @@
 #include "game/GameContent.h"
 
 #include <algine/core/Engine.h>
+#include <algine/core/log/Log.h>
+#define LOG_TAG "OrbitGenerator"
 
 #include "effolkronium/random.hpp"
 #include "delaunator.hpp"
@@ -27,11 +29,9 @@ GameBackground::GameBackground(GameScene &scene, Object *parent)
       m_texCoordsBuffer(new ArrayBuffer(this)),
       m_layout(new InputLayout(this)),
       m_pointsCount(0),
-      m_cameraman(scene.getCameraman()),
       m_projection(),
       m_modelView(),
-      m_previousFrame(-1.0f),
-      m_currentTime(-1.0f)
+      m_scene(scene)
 {
     auto addAttribute = [this](int location, int count, ArrayBuffer *buffer) {
         InputAttributeDescription attribDescription;
@@ -82,7 +82,7 @@ void GameBackground::generate() {
     std::swap(m_triangles, triangulatedPoints.triangles);
 
     // init z delta coordinates buffer
-    m_zPositions = Array<float>(m_pointsCount);
+    m_zPositions.reserve(m_pointsCount);
 
     for (uint i = 0; i < m_pointsCount; ++i)
         m_zPositions[i] = Random::get(-9.0f, -8.0f);
@@ -146,34 +146,31 @@ void GameBackground::draw(ShaderProgram *program) {
 }
 
 void GameBackground::animate() {
-    auto &camera = m_cameraman.getCamera();
+    auto &camera = m_scene.getCameraman().getCamera();
     auto k = glm::smoothstep(1.0f, Cameraman::GamePos.z, length(camera.getPos()));
 
     m_modelView = translate(glm::mat4(1.0f), {0.0f, 0.0f, -VirtualZ * k});
 
     // taking into account time
-
-    if (m_previousFrame == -1.0f) {
-        m_currentTime = 0;
-        m_previousFrame = static_cast<float>(Engine::timeFromStart()) / 1000.0f;
-    } else {
-        m_currentTime += static_cast<float>(Engine::timeFromStart()) / 1000.0f - m_previousFrame;
-        m_previousFrame = static_cast<float>(Engine::timeFromStart()) / 1000.0f;
-    }
+    auto time = static_cast<float>(Engine::timeFromStart()) / 1000.0f;
 
     // vertices & normals
 
-    constexpr float amplitude = 0.01f;
+    auto zUpdate = [time, this](uint i) {
+        constexpr float amplitude = 0.7f;
 
-    auto &deltaCoordZ = m_zPositions;
+        float max_z = m_zPositions[i] + amplitude;
+        float min_z = m_zPositions[i] - amplitude;
 
-    for (uint i = 0; i < m_pointsCount; ++i)
-        deltaCoordZ[i] = amplitude * sinf(m_phase[i] + m_frequency[i] * m_currentTime);
+        float ratio = 0.5f * (1.0f + sinf(m_phase[i] + m_frequency[i] * time));
+
+        return glm::mix(min_z, max_z, ratio);
+    };
 
     for (uint i = 0; i < m_vertices.size(); i += 9) {
-        m_vertices[i + 2] += deltaCoordZ[m_triangles[i / 3]];
-        m_vertices[i + 5] += deltaCoordZ[m_triangles[i / 3 + 2]];
-        m_vertices[i + 8] += deltaCoordZ[m_triangles[i / 3 + 1]];
+        m_vertices[i + 2] = zUpdate(m_triangles[i / 3]);
+        m_vertices[i + 5] = zUpdate(m_triangles[i / 3 + 2]);
+        m_vertices[i + 8] = zUpdate(m_triangles[i / 3 + 1]);
 
         // calculate normal
 
