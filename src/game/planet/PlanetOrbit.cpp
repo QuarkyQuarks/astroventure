@@ -177,8 +177,11 @@ glm::mat4 PlanetOrbit::falling(int platformID, int chunkID) {
 
             float absRoll = absAngle(roll);
 
-            scene->getCrystalParticles().spawn(
-                    parentPlanet()->getPos(), {cosf(absRoll), sinf(absRoll), 0.0f}, 1);
+            const glm::vec3 spawnDir {cosf(absRoll), sinf(absRoll), 0.0f};
+            constexpr float radOffset = 0.01;
+            const glm::vec3 spawnPos = parentPlanet()->getPos() + (parentPlanet()->getRadius() - radOffset) * spawnDir;
+
+            scene->getCrystalParticles().spawn(spawnPos, spawnDir, 1);
         }
     }
 

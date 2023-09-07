@@ -14,9 +14,10 @@ public:
     LoaderConfig resourceLoaderConfig() override;
 
 protected:
-    glm::vec3 getAcceleration(const ParticleSystem::Particle &particle) const override;
     bool isRemove(const ParticleSystem::Particle &particle) const override;
     void removed(const ParticleSystem::Particle &particle) override;
+
+    void updateParticle(ParticleSystem::Particle &particle) override;
 
 private:
     void loadResources();

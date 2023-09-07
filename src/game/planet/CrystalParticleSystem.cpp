@@ -5,11 +5,15 @@
 
 #include <algine/core/Window.h>
 #include <algine/std/model/ShapeBuilder.h>
+#include <algine/core/math/BezierCurve.h>
 
 #include "effolkronium/random.hpp"
 #include "PerlinNoise/PerlinNoise.hpp"
 
+#include "game/GameScene.h"
+
 using Random = effolkronium::random_static;
+using Trajectory = algine::BezierCurve<glm::vec3>;
 
 CrystalParticleSystem::CrystalParticleSystem(GameScene *parent)
     : ParticleSystem(parent),
@@ -24,13 +28,19 @@ struct CrystalParticleData {
 };
 
 void CrystalParticleSystem::spawn(const glm::vec3 &pos, const glm::vec3 &dir, int count) {
+    // calculating trajectory for each crystal using Bezier curve
+    glm::vec3 intermediatePoint1 = pos + dir * Random::get(0.2f, 0.3f);
+    glm::vec3 intermediatePoint2 = glm::vec3(0.0, 0.0 , 0.3);
+    Trajectory particleCurve = Trajectory({pos, intermediatePoint1, intermediatePoint2, m_endPoint});
+
     for (int i = 0; i < count; ++i) {
         // Note: designated initializes will be supported in c++2a
         addParticle({
             .pos = pos,
-            .velocity = dir * Random::get(1.8f, 2.5f),
             .rotate = {0.0f, 0.0f, 0.0f},
             .rotationVelocity = glm::vec3(TWO_PI),
+            .trajectory = particleCurve,
+            .animationStartTime = parentGameScene()->getGameTime(),
             .scale = Random::get(0.003f, 0.006f),
             .shapeId = 0,
             .data = new CrystalParticleData()
@@ -40,26 +50,20 @@ void CrystalParticleSystem::spawn(const glm::vec3 &pos, const glm::vec3 &dir, in
     }
 }
 
-glm::vec3 CrystalParticleSystem::getAcceleration(const ParticleSystem::Particle &particle) const {
-    auto data = static_cast<CrystalParticleData*>(particle.data);
+void CrystalParticleSystem::updateParticle(ParticleSystem::Particle &particle) {
+    auto scene = parentGameScene();
+    auto timeStep = scene->getScaledFrameTimeSec();
+    auto time = scene->getGameTime();
 
-    if (data->step == 0 && glm::length(particle.velocity) < 10E-2)
-        ++data->step;
+    auto animationProgress = glm::min((time - particle.animationStartTime) / 1500.0f, 1.0f);
+    particle.pos = particle.trajectory.getPoint(animationProgress);
 
-    switch (data->step) {
-        case 0:
-            return -particle.velocity * 12.0f;
-        case 1: {
-            glm::vec3 dir = glm::normalize(m_endPoint - particle.pos);
-            return dir * 3.0f;
-        }
-    }
-
-    return glm::vec3(0.0f);
+    if (particle.rotationVelocity != glm::vec3(0.0f))
+        particle.rotate += particle.rotationVelocity * timeStep;
 }
 
 bool CrystalParticleSystem::isRemove(const ParticleSystem::Particle &particle) const {
-    return glm::distance(particle.pos, m_endPoint) < 0.05f;
+    return glm::distance(particle.pos, m_endPoint) < 0.15f;
 }
 
 void CrystalParticleSystem::removed(const ParticleSystem::Particle &particle) {

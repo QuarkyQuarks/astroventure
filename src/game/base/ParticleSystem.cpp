@@ -11,9 +11,6 @@ GameScene* ParticleSystem::parentGameScene() const {
 }
 
 void ParticleSystem::update() {
-    auto scene = parentGameScene();
-    auto time = scene->getScaledFrameTimeSec();
-
     auto prevIt = m_particles.before_begin();
 
     for (auto it = m_particles.begin(); it != m_particles.end();) {
@@ -26,13 +23,7 @@ void ParticleSystem::update() {
             continue;
         }
 
-        particle.pos += particle.velocity * time;
-
-        glm::vec3 acceleration = getAcceleration(particle);
-        particle.velocity += acceleration * time;
-
-        if (particle.rotationVelocity != glm::vec3(0.0f))
-            particle.rotate += particle.rotationVelocity * time;
+        updateParticle(particle);
 
         ++prevIt;
         ++it;
@@ -98,3 +89,5 @@ std::forward_list<ParticleSystem::Particle>::iterator ParticleSystem::end() {
 }
 
 void ParticleSystem::removed(const Particle &particle) {}
+
+void ParticleSystem::updateParticle(ParticleSystem::Particle &particle) {}
