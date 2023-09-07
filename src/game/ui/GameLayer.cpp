@@ -94,7 +94,7 @@ void GameLayer::calcCrystalsEndPoint(float width, float height) {
         -Cameraman::GamePos.z);
 
     auto gameScene = parentGameUIScene()->parentGameScene();
-    gameScene->getCrystalParticles().setEndPoint({endPoint, 0.0f});
+    gameScene->getCrystalParticles().setEndPoint({endPoint, 0.95f});
 }
 
 void GameLayer::onShow() {
