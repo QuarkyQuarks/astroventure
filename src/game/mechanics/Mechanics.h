@@ -39,6 +39,7 @@ public:
 
     void update();
     void launch();
+    void reset();
 
 private:
     Subject<> m_onLaunch;
