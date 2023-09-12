@@ -24,10 +24,9 @@ Mechanics::Mechanics(GameScene &scene)
         {1.0f, 1.0f},
         -Cameraman::GamePos.z);
 
-    m_scene.getResetAction().addOnTriggerListener([this] () {
+    m_scene.getResetAction().addOnTriggerListener([this] {
         reset();
     });
-
 }
 
 bool Mechanics::isOnGround() {
@@ -360,5 +359,4 @@ void Mechanics::destroyed() {
     m_state = State::Destroyed;
     step = nullptr;
 }
-
 }
