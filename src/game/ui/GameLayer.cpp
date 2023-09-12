@@ -85,16 +85,18 @@ void GameLayer::calcCrystalsEndPoint(float width, float height) {
         -(2 * scrNormalized.y - 1)
     };
 
+    constexpr auto dstZ = 0.95f;
+
     glm::vec2 endPoint = mapScreenToWorld(
         glm::perspective(
             Cameraman::FieldOfView,
             width / height,
             Cameraman::Near, Cameraman::Far),
         scrCentered,
-        -Cameraman::GamePos.z);
+        -Cameraman::GamePos.z + dstZ);
 
     auto gameScene = parentGameUIScene()->parentGameScene();
-    gameScene->getCrystalParticles().setEndPoint({endPoint, 0.95f});
+    gameScene->getCrystalParticles().setEndPoint({endPoint, dstZ});
 }
 
 void GameLayer::onShow() {

@@ -63,7 +63,7 @@ void CrystalParticleSystem::updateParticle(ParticleSystem::Particle &particle) {
 }
 
 bool CrystalParticleSystem::isRemove(const ParticleSystem::Particle &particle) const {
-    return glm::distance(particle.pos, m_endPoint) < 0.15f;
+    return glm::distance(particle.pos, m_endPoint) < 0.01f;
 }
 
 void CrystalParticleSystem::removed(const ParticleSystem::Particle &particle) {
