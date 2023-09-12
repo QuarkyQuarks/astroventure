@@ -24,26 +24,29 @@ void CrystalParticleSystem::setEndPoint(const glm::vec3 &endPoint) {
 }
 
 struct CrystalParticleData {
-    int step = 0;
+    glm::vec3 rotationVelocity {0.0f};
+    BezierCurve<glm::vec3> trajectory;
+    float animationStartTime {};
 };
 
 void CrystalParticleSystem::spawn(const glm::vec3 &pos, const glm::vec3 &dir, int count) {
-    // calculating trajectory for each crystal using Bezier curve
+    // calculating trajectory for each crystal using a Bezier curve
     glm::vec3 intermediatePoint1 = pos + dir * Random::get(0.2f, 0.3f);
-    glm::vec3 intermediatePoint2 = glm::vec3(0.0, 0.0 , 0.3);
-    Trajectory particleCurve = Trajectory({pos, intermediatePoint1, intermediatePoint2, m_endPoint});
+    glm::vec3 intermediatePoint2 = glm::vec3(0.0f, 0.0f, 0.3f);
+    Trajectory particleCurve({pos, intermediatePoint1, intermediatePoint2, m_endPoint});
 
     for (int i = 0; i < count; ++i) {
         // Note: designated initializes will be supported in c++2a
         addParticle({
             .pos = pos,
             .rotate = {0.0f, 0.0f, 0.0f},
-            .rotationVelocity = glm::vec3(TWO_PI),
-            .trajectory = particleCurve,
-            .animationStartTime = parentGameScene()->getGameTime(),
             .scale = Random::get(0.003f, 0.006f),
             .shapeId = 0,
-            .data = new CrystalParticleData()
+            .data = new CrystalParticleData({
+                .rotationVelocity = glm::vec3(TWO_PI),
+                .trajectory = particleCurve,
+                .animationStartTime = parentGameScene()->getGameTime()
+            })
         });
 
         m_onParticleSpawned.notify();
@@ -54,12 +57,13 @@ void CrystalParticleSystem::updateParticle(ParticleSystem::Particle &particle) {
     auto scene = parentGameScene();
     auto timeStep = scene->getScaledFrameTimeSec();
     auto time = scene->getGameTime();
+    auto data = static_cast<CrystalParticleData*>(particle.data);
 
-    auto animationProgress = glm::min((time - particle.animationStartTime) / 1500.0f, 1.0f);
-    particle.pos = particle.trajectory.getPoint(animationProgress);
+    constexpr auto animationDuration = 1500.0f; // in ms
+    auto animationProgress = glm::min((time - data->animationStartTime) / animationDuration, 1.0f);
 
-    if (particle.rotationVelocity != glm::vec3(0.0f))
-        particle.rotate += particle.rotationVelocity * timeStep;
+    particle.pos = data->trajectory.getPoint(animationProgress);
+    particle.rotate += data->rotationVelocity * timeStep;
 }
 
 bool CrystalParticleSystem::isRemove(const ParticleSystem::Particle &particle) const {
