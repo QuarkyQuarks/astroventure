@@ -173,8 +173,8 @@ Subscription<> GameScene::addOnTickListener(const Observer<> &listener) {
 
 void GameScene::resetProgress() {
     m_settingsManager.saveProgress();
-    m_score = ObservableInt {0};
-    m_crystals = ObservableInt {0};
+    *m_score = 0;
+    *m_crystals = 0;
 }
 
 float GameScene::getFrameTimeSec() const {
