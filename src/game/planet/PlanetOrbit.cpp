@@ -158,8 +158,7 @@ glm::mat4 PlanetOrbit::falling(int platformID, int chunkID) {
     if (radius > finalPlatformRadius) {
         float &velocity = chunk.velocity;
 
-        //auto angularVelocity = Game::getInstance()->getPlanet(1)->getAngularVelocity();  TODO
-        const float acceleration = -3.0f; //* angularVelocity * angularVelocity;
+        const float acceleration = -3.0f;
         auto stepInterval = scene->getScaledFrameTimeSec();
 
         radius += velocity * stepInterval;
@@ -172,13 +171,19 @@ glm::mat4 PlanetOrbit::falling(int platformID, int chunkID) {
 
             if (m_fallenChunks == getChunksCount()) {
                 setState(State::OnPlanet);
-                // Game::getInstance()->setStep(Game::Step::Scroll); TODO: add listeners
             }
 
-            float absRoll = absAngle(roll);
+            // in order to spawn a crystal particle
+            // under the planet's surface
+            constexpr float radiusMultiplier = 0.99f;
 
-            scene->getCrystalParticles().spawn(
-                    parentPlanet()->getPos(), {cosf(absRoll), sinf(absRoll), 0.0f}, 1);
+            float absRoll = absAngle(roll);
+            auto planet = parentPlanet();
+
+            const glm::vec3 spawnDir {std::cos(absRoll), std::sin(absRoll), 0.0f};
+            const glm::vec3 spawnPos = planet->getPos() + (planet->getRadius() * radiusMultiplier) * spawnDir;
+
+            scene->getCrystalParticles().spawn(spawnPos, spawnDir, 1);
         }
     }
 

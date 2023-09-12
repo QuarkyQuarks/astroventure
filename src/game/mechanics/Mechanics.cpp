@@ -23,6 +23,10 @@ Mechanics::Mechanics(GameScene &scene)
         glm::perspective(Cameraman::FieldOfView, 0.52f, Cameraman::Near, Cameraman::Far),
         {1.0f, 1.0f},
         -Cameraman::GamePos.z);
+
+    m_scene.getResetAction().addOnTriggerListener([this] {
+        reset();
+    });
 }
 
 bool Mechanics::isOnGround() {
@@ -68,14 +72,16 @@ void Mechanics::update() {
     }
 }
 
+void Mechanics::reset() {
+    step = nullptr;
+}
+
 void Mechanics::launch() {
     Log::debug(LOG_TAG, __func__);
-
     auto spacecraft = m_scene.getSpacecraft();
     spacecraft->setVelocity({0, 0, 0});
     spacecraft->setParent(&m_scene);
 
-    // this method leaves capacity of the vector unchanged
     m_trajectory.points.clear();
     m_trajectory.velocity.clear();
     m_trajectory.landingPlanet = nullptr;
@@ -135,8 +141,11 @@ void Mechanics::trajectoryCalc() {
     // we are calculating points until our virtual spacecraft encounters the bounds
     // (it happens even when we land on the planet);
     while (inBounds(position)) {
-        auto velocity0 = velocity;
         auto &planets = m_scene.getPlanets();
+
+        E = 0.01;
+        position.x += ODE::linear(velocity.x, E);
+        position.y += ODE::linear(velocity.y, E);
 
         for (int i = 1; i < planets.size(); ++i) {
             auto planet = planets[i];
@@ -152,8 +161,9 @@ void Mechanics::trajectoryCalc() {
                 E = 0.001;
             }
 
-            velocity.x += ODE::gravity<&vec2::x, 2>(position - planetPos, E);
-            velocity.y += ODE::gravity<&vec2::y, 2>(position - planetPos, E);
+            vec2 toPlanet = position - planetPos;
+            velocity.x += ODE::spherically_symmetric(toPlanet, vec2(toPlanet.x, 0), E);
+            velocity.y += ODE::spherically_symmetric(toPlanet, vec2(0, toPlanet.y), E);
 
             if (distToPlanet < minDistToPlanet ) {
                 closestPlanetId = (int) m_trajectory.points.size();
@@ -163,10 +173,6 @@ void Mechanics::trajectoryCalc() {
                 m_trajectory.landingPlanet = planet;
             }
         }
-
-        E = 0.01;
-        position.x += ODE::linear(velocity0.x, E);
-        position.y += ODE::linear(velocity0.y, E);
 
         m_trajectory.points.emplace_back(position);
         m_trajectory.velocity.emplace_back(velocity);

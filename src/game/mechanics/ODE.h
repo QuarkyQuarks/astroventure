@@ -1,5 +1,5 @@
-#ifndef SPACEEXPLORER_ODE_H
-#define SPACEEXPLORER_ODE_H
+#ifndef ASTROVENTURE_ODE_H
+#define ASTROVENTURE_ODE_H
 
 #include <cmath>
 
@@ -10,22 +10,38 @@
 namespace mechanics {
 class ODE {
 public:
-    static inline num_t linear(num_t p, num_t h) {
+    static inline num_t linear(num_t p, num_t E) {
         num_t k1 = p;
-        num_t k2 = p * k1 * (h / 2);
-        num_t k3 = p * k2 * (h / 2);
-        num_t k4 = p * k3 * h;
-        return rk4(k1, k2, k3, k4, h);
+        num_t k2 = p * k1 * (E / 2);
+        num_t k3 = p * k2 * (E / 2);
+        num_t k4 = p * k3 * E;
+        return rk4(k1, k2, k3, k4, E);
     }
 
-    template<auto ptr, int L>
-    static num_t gravity(const glm::vec<L, num_t> &v, num_t h, num_t massTimesG = 0.15) {
-        num_t val = v.*ptr;
-        num_t k1 = -massTimesG * std::pow(glm::length(v), -3) * val;
-        num_t k2 = -massTimesG * std::pow(glm::length(v + num_t(k1 * h / 2)), -3) * (val + k1 * h / 2);
-        num_t k3 = -massTimesG * std::pow(glm::length(v + num_t(k2 * h / 2)), -3) * (val + k2 * h / 2);
-        num_t k4 = -massTimesG * std::pow(glm::length(v + num_t(k3 * h)), -3) * (val + k3 * h);
-        return rk4(k1, k2, k3, k4, h);
+    template<int L>
+    static num_t spherically_symmetric(
+        const glm::vec<L, num_t> &r,
+        const glm::vec<L, num_t> &component,
+        num_t E,
+        num_t g = 0.15,
+        num_t n = 1
+    ) {
+        using T = glm::vec<L, num_t>;
+
+        const num_t componentAbs = glm::dot(component, T(1.0));
+        const T versor = component / componentAbs;
+
+        // gradient of the spherically symmetric potential V = - g / r^n
+        auto potentialForce = [=](const T &vector, num_t scalar) {
+            return -g * std::pow(glm::length(vector), -(n + 2)) * scalar;
+        };
+
+        num_t k1 = potentialForce(r, componentAbs);
+        num_t k2 = potentialForce(r + versor * (k1 * E / 2), componentAbs + k1 * E / 2);
+        num_t k3 = potentialForce(r + versor * (k2 * E / 2), componentAbs + k2 * E / 2);
+        num_t k4 = potentialForce(r + versor * (k3 * E), componentAbs + k3 * E);
+
+        return rk4(k1, k2, k3, k4, E);
     }
 
 private:
@@ -35,5 +51,5 @@ private:
 };
 }
 
-#endif //SPACEEXPLORER_ODE_H
+#endif //ASTROVENTURE_ODE_H
 

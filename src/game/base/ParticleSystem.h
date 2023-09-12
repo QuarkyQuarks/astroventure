@@ -7,6 +7,8 @@
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 
+#include <algine/core/math/BezierCurve.h>
+
 using namespace algine;
 using namespace tulz;
 
@@ -16,9 +18,7 @@ class ParticleSystem: public Object {
 public:
     struct Particle {
         glm::vec3 pos;
-        glm::vec3 velocity;
         glm::vec3 rotate;
-        glm::vec3 rotationVelocity;
         float scale;
         int shapeId;
         void *data;
@@ -46,9 +46,10 @@ public:
     std::forward_list<Particle>::iterator end();
 
 protected:
-    virtual glm::vec3 getAcceleration(const Particle &particle) const = 0;
     virtual bool isRemove(const Particle &particle) const = 0;
     virtual void removed(const Particle &particle);
+
+    virtual void updateParticle(Particle &particle);
 
 protected:
     tulz::Array<Shape*> m_pool;
