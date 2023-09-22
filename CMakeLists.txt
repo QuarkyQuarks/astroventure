@@ -130,7 +130,11 @@ set(Astroventure_SOURCES ${SoLoud_SOURCES}
         src/game/planet/PlanetArray.h
         src/game/mechanics/types.h
         src/game/action/StateAction.cpp
-        src/game/action/StateAction.h)
+        src/game/action/StateAction.h
+        src/init/init.h
+        src/init/android.cpp
+        src/init/glfw.cpp
+        src/init/qt.cpp)
 
 if (ANDROID)
     add_library(Astroventure SHARED ${Astroventure_SOURCES})

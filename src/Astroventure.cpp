@@ -1,35 +1,16 @@
 #include <algine/core/Engine.h>
 
-#include "loader/LoaderContent.h"
+#include "init/init.h"
 
-using namespace algine;
-
-#ifdef __ANDROID__
-#include <algine/Android.h>
-
-#include <algine/core/Screen.h>
-
-AlgineAppInit {
-    Screen::instance()->setContent(new LoadingContent);
-}
-#else
-#include <algine/core/window/QtWindow.h>
-
+#ifndef __ANDROID__
 int main(int argc, char *argv[]) {
-    Engine::init();
-
-    auto window = new QtWindow();
-    window->setDimensions(500, 1000);
-    window->addOnInitializedListener([window]() {
-        window->setContent(new LoaderContent());
-        window->renderLoop();
-    });
-
-    window->show();
-
-    Engine::wait();
-    Engine::destroy();
-
+    algine::Engine::exec(argc, argv, &init);
     return 0;
 }
+#else
+#include <algine/Android.h>
+
+AlgineAppInit {
+    init();
+};
 #endif
