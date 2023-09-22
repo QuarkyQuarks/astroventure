@@ -1,6 +1,6 @@
 #include "LoaderConfig.h"
 
-#include <cxxabi.h>
+#include <tulz/demangler.h>
 
 bool LoaderConfig::isLoadable() const {
     return static_cast<bool>(loader);
@@ -15,8 +15,5 @@ bool LoaderConfig::hasDependencies() const {
 }
 
 std::string LoaderConfig::demangle(std::string_view mangled) {
-    const auto dmg = abi::__cxa_demangle(mangled.data(), nullptr, nullptr, nullptr);
-    std::string name = dmg;
-    std::free(dmg);
-    return name;
+    return tulz::demangler::demangle(mangled);
 }

@@ -11,12 +11,29 @@ GameRenderPass::GameRenderPass(GameRenderer *renderer)
       m_background(new GameBackground(*renderer->parentGameScene(), this)),
       m_atmosphereRenderer(new AtmosphereRenderer(renderer->parentGameScene()->getCameraman().camera(), this)),
       m_program(),
-      m_framebuffer()
+      m_framebuffer(new Framebuffer(this))
 {
     auto gameContent = renderer->parentGameScene()->parentGameContent();
     gameContent->addOnSizeChangedListener([this](int width, int height) {
         m_framebuffer->resizeAttachments(width, height);
     });
+
+    auto sceneTexture = new Texture2D(m_framebuffer);
+    sceneTexture->setFormat(Texture::RGBA16F); // TODO: rgb?
+    sceneTexture->bind();
+    sceneTexture->setParams(Texture2D::defaultParams());
+    sceneTexture->unbind();
+
+    auto rbo = new Renderbuffer(m_framebuffer);
+    rbo->bind();
+    rbo->setFormat(Texture::DepthComponent24);
+    rbo->unbind();
+
+    m_framebuffer->bind();
+    m_framebuffer->getActiveOutputList().addColor(0);
+    m_framebuffer->update();
+    m_framebuffer->attachRenderbuffer(rbo, Framebuffer::DepthAttachment);
+    m_framebuffer->attachTexture(sceneTexture, Framebuffer::ColorAttachmentZero);
 }
 
 void GameRenderPass::render() {
@@ -49,26 +66,6 @@ LoaderConfig GameRenderPass::resourceLoaderConfig() {
 }
 
 void GameRenderPass::loadResources() {
-    // create framebuffer
-    m_framebuffer = new Framebuffer(this);
-
-    auto sceneTexture = new Texture2D(m_framebuffer);
-    sceneTexture->setFormat(Texture::RGBA16F); // TODO: rgb?
-    sceneTexture->bind();
-    sceneTexture->setParams(Texture2D::defaultParams());
-    sceneTexture->unbind();
-
-    auto rbo = new Renderbuffer(m_framebuffer);
-    rbo->bind();
-    rbo->setFormat(Texture::DepthComponent24);
-    rbo->unbind();
-
-    m_framebuffer->bind();
-    m_framebuffer->getActiveOutputList().addColor(0);
-    m_framebuffer->update();
-    m_framebuffer->attachRenderbuffer(rbo, Framebuffer::DepthAttachment);
-    m_framebuffer->attachTexture(sceneTexture, Framebuffer::ColorAttachmentZero);
-
     // create shaders
     ShaderBuilder vertex(Shader::Type::Vertex);
     vertex.setPath("shaders/vertexShader.glsl");

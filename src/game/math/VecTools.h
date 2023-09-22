@@ -64,7 +64,7 @@ inline std::pair<glm::vec3, int> getNormal(const glm::vec3 &p1, const glm::vec3 
     auto angle = atan2(glm::dot(nxo, glm::normalize(nxo)), glm::dot(n, o));
 
     // fix vertex order if needed
-    if (!((angle >= 0 && angle <= M_PI / 2) || (angle <= 0 && angle >= -M_PI / 2))) {
+    if (!((angle >= 0 && angle <= PI / 2) || (angle <= 0 && angle >= -PI / 2))) {
         n *= -1;
         return {n, -1};
     }

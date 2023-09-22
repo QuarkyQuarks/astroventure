@@ -30,9 +30,9 @@ set(PCC_BUILD_SHARED ON) # set(PCC_BUILD_STATIC ON) for release
 add_subdirectory(${algine_dir} algine)
 add_subdirectory(contrib/PointCloudCrust)
 
-include(SoLoud.cmake)
+include(cmake/SoLoud.cmake)
 SoLoud_collect_sources(
-        BACKENDS alsa miniaudio
+        BACKENDS alsa miniaudio winmm
         AUDIOSOURCES wav)
 
 set(SoLoud_SOURCES
@@ -43,10 +43,16 @@ if (ANDROID)
     set(SoLoud_SOURCES ${SoLoud_SOURCES} ${SoLoud_backend_miniaudio})
     set(Astroventure_link_extra OpenSLES) # for api [16, 27)
     add_definitions(-DWITH_MINIAUDIO)
-else()
+elseif (UNIX)
     set(SoLoud_SOURCES ${SoLoud_SOURCES} ${SoLoud_backend_alsa})
     set(Astroventure_link_extra asound)
     add_definitions(-DWITH_ALSA)
+elseif (WIN32)
+    set(SoLoud_SOURCES ${SoLoud_SOURCES} ${SoLoud_backend_winmm})
+    set(Astroventure_link_extra winmm)
+    add_definitions(-DWITH_WINMM)
+else()
+    message(FATAL_ERROR "Unsupported OS")
 endif()
 
 set(Astroventure_SOURCES ${SoLoud_SOURCES}
@@ -124,7 +130,11 @@ set(Astroventure_SOURCES ${SoLoud_SOURCES}
         src/game/planet/PlanetArray.h
         src/game/mechanics/types.h
         src/game/action/StateAction.cpp
-        src/game/action/StateAction.h)
+        src/game/action/StateAction.h
+        src/init/init.h
+        src/init/android.cpp
+        src/init/glfw.cpp
+        src/init/qt.cpp)
 
 if (ANDROID)
     add_library(Astroventure SHARED ${Astroventure_SOURCES})
@@ -143,3 +153,20 @@ target_include_directories(Astroventure PRIVATE
         contrib
         src
         src/core)
+
+if (WIN32)
+    # https://stackoverflow.com/questions/22744262/cant-call-stdmax-because-minwindef-h-defines-max
+    target_compile_definitions(Astroventure PRIVATE NOMINMAX)
+
+    algine_target_mklink(
+            TARGET Astroventure
+            ALGINE_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/algine")
+
+    add_custom_command(TARGET Astroventure
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND}
+            -D CURRENT_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
+            -P "cmake/win32/PostBuild.cmake"
+            COMMENT "Running win32/PostBuild.cmake..."
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+endif()

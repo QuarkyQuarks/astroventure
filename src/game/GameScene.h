@@ -172,7 +172,7 @@ private:
     PlanetArray m_planets;
 
 private:
-    long m_prevFrameTime;
+    int64_t m_prevFrameTime;
     int m_prevDeltaFrameTime;
     float m_timeScale;
     float m_gameTimeMs;

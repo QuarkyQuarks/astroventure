@@ -4,6 +4,7 @@
 
 #include <thread>
 #include <cassert>
+#include <ranges>
 
 using namespace algine;
 
@@ -39,13 +40,10 @@ void Loader::pollTasks() {
 
     while (it != m_pendingTasks.end()) {
         auto &task = m_tasks[*it];
-        bool isReady = true;
 
-        for (auto dep : task.config.dependsOn) {
-            if (auto &depTask = m_tasks[dep]; !depTask.isLoaded) {
-                isReady = false;
-            }
-        }
+        bool isReady = std::ranges::all_of(task.config.dependsOn, [this](Loadable *dep) {
+            return static_cast<bool>(m_tasks[dep].isLoaded);
+        });
 
         if (isReady) {
             readyTasks.emplace_front(&task);

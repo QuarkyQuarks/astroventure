@@ -165,7 +165,7 @@ void Mechanics::trajectoryCalc() {
             velocity.x += ODE::spherically_symmetric(toPlanet, vec2(toPlanet.x, 0), E);
             velocity.y += ODE::spherically_symmetric(toPlanet, vec2(0, toPlanet.y), E);
 
-            if (distToPlanet < minDistToPlanet ) {
+            if (distToPlanet < minDistToPlanet) {
                 closestPlanetId = (int) m_trajectory.points.size();
             }
 
