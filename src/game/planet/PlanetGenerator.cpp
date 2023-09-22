@@ -10,8 +10,6 @@
 
 #include "effolkronium/random.hpp"
 
-#include <tulz/threading/MutexLocker.h>
-
 #include "PointCloudCrust/PointCloudCrust.h"
 #include "PerlinNoise/PerlinNoise.hpp"
 #include "poisson_disk_sampling.h"
@@ -362,7 +360,8 @@ void PlanetGenerator::generateCrystals(PlanetData &data) {
 Planet* PlanetGenerator::gpuStep(PlanetData planetData) {
     float angularVelocity = calculateAngularVelocity();
 
-    MutexLocker locker(m_mutex);
+    // TODO: do we need this mutex?
+    std::scoped_lock locker(m_mutex);
 
     // auto &colorScheme = ColorSchemeManager::getColorScheme(); TODO
     ColorScheme colorScheme; // TODO
