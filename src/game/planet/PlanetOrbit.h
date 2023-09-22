@@ -139,7 +139,7 @@ public:
     public:
         using iterator_category = std::forward_iterator_tag;
         using value_type = Info;
-        using difference_type = ssize_t;
+        using difference_type = std::ptrdiff_t;
         using pointer = Info*;
         using reference = Info&;
 
