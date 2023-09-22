@@ -149,3 +149,20 @@ target_include_directories(Astroventure PRIVATE
         contrib
         src
         src/core)
+
+if (WIN32)
+    # https://stackoverflow.com/questions/22744262/cant-call-stdmax-because-minwindef-h-defines-max
+    target_compile_definitions(Astroventure PRIVATE NOMINMAX)
+
+    algine_target_mklink(
+            TARGET Astroventure
+            ALGINE_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/algine")
+
+    add_custom_command(TARGET Astroventure
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND}
+            -D CURRENT_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
+            -P "cmake/win32/PostBuild.cmake"
+            COMMENT "Running win32/PostBuild.cmake..."
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+endif()
