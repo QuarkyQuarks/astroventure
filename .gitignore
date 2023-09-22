@@ -3,4 +3,4 @@
 /.vscode
 /build
 /resources/settings.xml
-cmake*
+cmake-build*
