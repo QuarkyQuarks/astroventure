@@ -14,6 +14,8 @@ void DisplayPass::setTexture(Texture2D *texture) {
 
 void DisplayPass::render() {
     Framebuffer::getDefault()->bind();
+    Framebuffer::getDefault()->clear(Framebuffer::DepthBuffer);
+
     m_program->bind();
     m_texture->use(0);
 
