@@ -80,7 +80,7 @@ void GameBackground::generate() {
     std::swap(m_triangles, triangulatedPoints.triangles);
 
     // init z delta coordinates buffer
-    m_zPositions.reserve(m_pointsCount);
+    m_zPositions.resize(m_pointsCount);
 
     for (uint i = 0; i < m_pointsCount; ++i)
         m_zPositions[i] = Random::get(-9.0f, -8.0f);
