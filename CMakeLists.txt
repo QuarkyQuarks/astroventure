@@ -30,7 +30,7 @@ set(PCC_BUILD_SHARED ON) # set(PCC_BUILD_STATIC ON) for release
 add_subdirectory(${algine_dir} algine)
 add_subdirectory(contrib/PointCloudCrust)
 
-include(SoLoud.cmake)
+include(cmake/SoLoud.cmake)
 SoLoud_collect_sources(
         BACKENDS alsa miniaudio
         AUDIOSOURCES wav)
