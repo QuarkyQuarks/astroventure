@@ -1,5 +1,7 @@
 #include "PlanetManager.h"
 
+#include <format>
+
 PlanetManager::PlanetManager(Object *parent)
     : Object(parent),
       m_orbitGenerator(new OrbitGenerator(this)),
