@@ -32,7 +32,7 @@ add_subdirectory(contrib/PointCloudCrust)
 
 include(cmake/SoLoud.cmake)
 SoLoud_collect_sources(
-        BACKENDS alsa miniaudio
+        BACKENDS alsa miniaudio winmm
         AUDIOSOURCES wav)
 
 set(SoLoud_SOURCES
@@ -43,10 +43,16 @@ if (ANDROID)
     set(SoLoud_SOURCES ${SoLoud_SOURCES} ${SoLoud_backend_miniaudio})
     set(Astroventure_link_extra OpenSLES) # for api [16, 27)
     add_definitions(-DWITH_MINIAUDIO)
-else()
+elseif (UNIX)
     set(SoLoud_SOURCES ${SoLoud_SOURCES} ${SoLoud_backend_alsa})
     set(Astroventure_link_extra asound)
     add_definitions(-DWITH_ALSA)
+elseif (WIN32)
+    set(SoLoud_SOURCES ${SoLoud_SOURCES} ${SoLoud_backend_winmm})
+    set(Astroventure_link_extra winmm)
+    add_definitions(-DWITH_WINMM)
+else()
+    message(FATAL_ERROR "Unsupported OS")
 endif()
 
 set(Astroventure_SOURCES ${SoLoud_SOURCES}
