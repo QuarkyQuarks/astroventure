@@ -7,23 +7,19 @@ set(CMAKE_CXX_STANDARD 20)
 # silence warnings from sol2
 add_compile_options(-Wno-unknown-warning-option)
 
-if (UNIX AND NOT ANDROID)
-    execute_process(COMMAND bash -c "which mold > /dev/null" RESULT_VARIABLE moldRes)
+include("${algine_dir}/cmake/mold.cmake")
+try_use_mold()
 
-    if (${moldRes} EQUAL 0)
-        message(STATUS "mold was found and will be used for linking")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=mold")
-        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=mold")
-        set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -fuse-ld=mold")
-    endif()
-endif()
+macro(set_global name value)
+    set(${name} ${value} CACHE INTERNAL ${name})
+endmacro()
 
-set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT OFF)
-set(ASSIMP_BUILD_OBJ_IMPORTER ON)
-set(ASSIMP_BUILD_ZLIB OFF)
-set(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
-set(ASSIMP_BUILD_TESTS OFF)
-set(LUA_ENABLE_SHARED OFF)
+set_global(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT OFF)
+set_global(ASSIMP_BUILD_OBJ_IMPORTER ON)
+set_global(ASSIMP_BUILD_ZLIB OFF)
+set_global(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
+set_global(ASSIMP_BUILD_TESTS OFF)
+set_global(LUA_ENABLE_SHARED OFF)
 
 set(PCC_BUILD_SHARED ON) # set(PCC_BUILD_STATIC ON) for release
 
