@@ -1,5 +1,5 @@
-#ifndef SPACEEXPLORER_ODE_H
-#define SPACEEXPLORER_ODE_H
+#ifndef ASTROVENTURE_ODE_H
+#define ASTROVENTURE_ODE_H
 
 #include <cmath>
 
@@ -32,8 +32,8 @@ public:
         const T versor = component / componentAbs;
 
         // gradient of the spherically symmetric potential V = - g / r^n
-        auto potentialForce = [&] (const T &vector, num_t scalar) {
-            return - g * std::pow(glm::length(vector), -(n + 2)) * scalar;
+        auto potentialForce = [=](const T &vector, num_t scalar) {
+            return -g * std::pow(glm::length(vector), -(n + 2)) * scalar;
         };
 
         num_t k1 = potentialForce(r, componentAbs);
@@ -51,5 +51,5 @@ private:
 };
 }
 
-#endif //SPACEEXPLORER_ODE_H
+#endif //ASTROVENTURE_ODE_H
 

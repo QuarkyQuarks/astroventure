@@ -16,13 +16,9 @@ class GameScene;
 
 class ParticleSystem: public Object {
 public:
-    struct Particle { // TODO : make it different for every child class?
+    struct Particle {
         glm::vec3 pos;
-        glm::vec3 velocity;
         glm::vec3 rotate;
-        glm::vec3 rotationVelocity;
-        algine::BezierCurve<glm::vec3> trajectory;
-        float animationStartTime;
         float scale;
         int shapeId;
         void *data;
