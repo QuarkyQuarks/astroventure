@@ -153,7 +153,7 @@ void Mechanics::trajectoryCalc() {
 
             const num_t radius = planet->getOrbit()->getRadius() + spacecraft->getHeight() / 2;
             num_t distToPlanet = glm::distance(position, planetPos);
-            num_t minDistToPlanet = glm::distance(m_trajectory.points.at(closestPointIdx), planetPos);
+            num_t minDistToPlanet = glm::distance(m_trajectory.points[closestPointIdx], planetPos);
 
             constexpr num_t margin = 0.03;
 
