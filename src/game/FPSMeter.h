@@ -28,7 +28,7 @@ private:
 
 private:
     int m_sampleLengthMs;
-    long m_prevTime;
+    int64_t m_prevTime;
     size_t m_frameCount;
 };
 

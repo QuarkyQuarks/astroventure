@@ -9,7 +9,6 @@
 #include <algine/core/math/PCHIPInterpolator.h>
 #include <algine/std/model/Mesh.h>
 
-#include <tulz/threading/Mutex.h>
 #include <tulz/threading/ThreadPool.h>
 
 using namespace tulz;
@@ -62,7 +61,7 @@ private:
 
 private:
     ThreadPool m_threadPool;
-    Mutex m_mutex;
+    std::mutex m_mutex;
     IcoSphere m_crystalsBase;
     PlanetGraph::NeighborList m_crystalsGraph;
     PCHIPInterpolator m_crystalsInterpolator;

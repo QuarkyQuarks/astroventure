@@ -8,7 +8,7 @@ BloomPass::BloomPass(GameRenderer *renderer)
     : GameRenderer::RenderPass(renderer),
       m_multiplier(0.1f),
       m_searchProgram(),
-      m_searchFb(),
+      m_searchFb(new Framebuffer(this)),
       m_blur(),
       m_texture(),
       m_dimensions(),
@@ -28,6 +28,30 @@ BloomPass::BloomPass(GameRenderer *renderer)
         m_searchFb->resizeAttachments(m_blurDimensions.x, m_blurDimensions.y);
         m_blur->resizeOutput(m_blurDimensions.x, m_blurDimensions.y);
     });
+
+    auto searchTexture = new Texture2D(this);
+    searchTexture->setFormat(Texture::RGB16F);
+    searchTexture->bind();
+    searchTexture->setParams(Texture2D::defaultParams());
+    searchTexture->unbind();
+
+    m_searchFb->bind();
+    m_searchFb->getActiveOutputList().addColor(0);
+    m_searchFb->update();
+    m_searchFb->attachTexture(searchTexture, Framebuffer::ColorAttachmentZero);
+    m_searchFb->unbind();
+
+    TextureCreateInfo createInfo;
+    createInfo.format = Texture::RGB16F;
+    createInfo.params = Texture2D::defaultParams();
+
+    m_blur = new Blur({
+        .textureCreateInfo = std::move(createInfo),
+        .kernelRadius = 5,
+        .kernelSigma = 16,
+        .blurComponents = "rgb"
+    }, this);
+    m_blur->setQuadRenderer(parentGameRenderer()->getQuadRenderer());
 }
 
 void BloomPass::setInput(Texture2D *texture) {
@@ -78,29 +102,4 @@ void BloomPass::loadResources() {
     m_searchProgram->loadActiveLocations();
     m_searchProgram->setFloat("brightnessThreshold", 0.6f);
     m_searchProgram->setInt("image", 0);
-
-    auto searchTexture = new Texture2D(this);
-    searchTexture->setFormat(Texture::RGB16F);
-    searchTexture->bind();
-    searchTexture->setParams(Texture2D::defaultParams());
-    searchTexture->unbind();
-
-    m_searchFb = new Framebuffer(this);
-    m_searchFb->bind();
-    m_searchFb->getActiveOutputList().addColor(0);
-    m_searchFb->update();
-    m_searchFb->attachTexture(searchTexture, Framebuffer::ColorAttachmentZero);
-    m_searchFb->unbind();
-
-    TextureCreateInfo createInfo;
-    createInfo.format = Texture::RGB16F;
-    createInfo.params = Texture2D::defaultParams();
-
-    m_blur = new Blur({
-        .textureCreateInfo = std::move(createInfo),
-        .kernelRadius = 5,
-        .kernelSigma = 16,
-        .blurComponents = "rgb"
-    }, this);
-    m_blur->setQuadRenderer(parentGameRenderer()->getQuadRenderer());
 }

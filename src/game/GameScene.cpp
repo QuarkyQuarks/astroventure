@@ -173,8 +173,8 @@ Subscription<> GameScene::addOnTickListener(const Observer<> &listener) {
 
 void GameScene::resetProgress() {
     m_settingsManager.saveProgress();
-    m_score = ObservableInt {0};
-    m_crystals = ObservableInt {0};
+    *m_score = 0;
+    *m_crystals = 0;
 }
 
 float GameScene::getFrameTimeSec() const {
@@ -223,9 +223,14 @@ void GameScene::startTimeScaling(float dstScale, int durationMs, std::function<v
                 callback();
             }
 
-            sub->unsubscribe();
-
-            delete sub;
+            // Wrapping in invokeLater is needed because the Observer (this lambda)
+            // will be destroyed after the call to unsubscribe. Hence, all its
+            // members will become invalid. That means that `sub` will become
+            // an invalid pointer after the call to unsubscribe.
+            getParentWindow()->invokeLater([sub] {
+                sub->unsubscribe();
+                delete sub;
+            });
         }
     });
 }
