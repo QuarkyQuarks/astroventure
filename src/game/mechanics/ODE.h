@@ -23,7 +23,7 @@ public:
         const glm::vec<L, num_t> &r,
         const glm::vec<L, num_t> &component,
         num_t E,
-        num_t g = 0.15,
+        num_t g = 0.17,
         num_t n = 1
     ) {
         using T = glm::vec<L, num_t>;

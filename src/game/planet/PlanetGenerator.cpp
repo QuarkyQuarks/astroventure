@@ -62,8 +62,8 @@ void PlanetGenerator::generateAsync(Callback callback, Planet *base) {
 
 float PlanetGenerator::calculateAngularVelocity() {
     auto angularVelocityDir = static_cast<float>(Random::get<bool>() * 2 - 1); // -1 or 1
-    auto angularVelocity = angularVelocityDir * PI / 2.3f;
-    return angularVelocity;
+    auto angularVelocityAbs =  PI / 2.03f;
+    return angularVelocityDir * angularVelocityAbs;
 }
 
 template<typename T>
