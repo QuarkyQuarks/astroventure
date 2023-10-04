@@ -136,7 +136,7 @@ void Mechanics::trajectoryCalc() {
     m_trajectory.velocity.emplace_back(velocity);
 
     num_t E = 0.01;
-    int closestPlanetId = 0;
+    int closestPointIdx = 0;
 
     // we are calculating points until our virtual spacecraft encounters the bounds
     // (it happens even when we land on the planet);
@@ -153,20 +153,20 @@ void Mechanics::trajectoryCalc() {
 
             const num_t radius = planet->getOrbit()->getRadius() + spacecraft->getHeight() / 2;
             num_t distToPlanet = glm::distance(position, planetPos);
-            num_t minDistToPlanet = glm::distance(m_trajectory.points[closestPlanetId], planetPos);
+            num_t minDistToPlanet = glm::distance(m_trajectory.points[closestPointIdx], planetPos);
 
-            constexpr num_t margin = 0.02;
+            constexpr num_t margin = 0.03;
 
             if (distToPlanet <= (radius + margin)) {
-                E = 0.001;
+                E = 0.00001;
             }
 
             vec2 toPlanet = position - planetPos;
             velocity.x += ODE::spherically_symmetric(toPlanet, vec2(toPlanet.x, 0), E);
             velocity.y += ODE::spherically_symmetric(toPlanet, vec2(0, toPlanet.y), E);
 
-            if (distToPlanet < minDistToPlanet) {
-                closestPlanetId = (int) m_trajectory.points.size();
+            if (distToPlanet < minDistToPlanet ) {
+                closestPointIdx = (int) m_trajectory.points.size() - 1;
             }
 
             if (distToPlanet <= radius && !m_trajectory.landingPlanet) {
@@ -183,7 +183,7 @@ void Mechanics::trajectoryCalc() {
     // otherwise, we erase all the points after this critical point - we construct landing trajectory
 
     if (m_trajectory.landingPlanet) {
-        m_trajectory.points.erase(m_trajectory.points.begin() + closestPlanetId, m_trajectory.points.end());
+        m_trajectory.points.erase(m_trajectory.points.begin() + closestPointIdx, m_trajectory.points.end());
         // TODO: construct some artificial points to smooth out docking with orbit
         // TODO: erase unused velocities?
     }
@@ -298,12 +298,12 @@ void Mechanics::orbitDocking() {
     spacecraft->setVelocity({-std::cos(spacecraft->getRoll() + PI / 2), -std::sin(spacecraft->getRoll() + PI / 2), 0});
 
     auto orbit = planet->getOrbit();
-    int platformId = orbit->platformAtAbs((float) angleBetweenVectors(vec2 {1, 0}, dir));
+    int platformIdx = orbit->platformAtAbs((float) angleBetweenVectors(vec2 {1, 0}, dir));
 
     spacecraft->setParent(orbit);
 
-    if (platformId != -1) {
-        orbit->fall(platformId);
+    if (platformIdx != -1) {
+        orbit->fall(platformIdx);
         step = &Mechanics::landing;
         m_onLanding.notify(planet);
         m_state = State::Landing;
@@ -324,7 +324,7 @@ void Mechanics::landing() {
     deltaPos.y = ODE::linear(spacecraft->getVelocity().y, stepInterval);
     spacecraft->changePos(deltaPos);
 
-    constexpr num_t accelScalar = -1.0;
+    constexpr num_t accelScalar = -0.5;
     num_t roll = spacecraft->getRoll() + PI / 2;
     const vec2 acceleration {accelScalar * std::cos(roll), accelScalar * std::sin(roll)};
 
