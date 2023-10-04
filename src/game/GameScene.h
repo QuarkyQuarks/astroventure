@@ -38,8 +38,6 @@ class GameScene: public Scene, public Loadable {
 public:
     explicit GameScene(GameContent *parent);
 
-    void render() override;
-
     LoaderConfig resourceLoaderConfig() override;
 
     GameContent* parentGameContent() const;
@@ -126,6 +124,10 @@ public:
      * @return The game time in milliseconds.
      */
     float getGameTime() const;
+
+protected:
+    void onShow() override;
+    void onRender() override;
 
 private:
     /**

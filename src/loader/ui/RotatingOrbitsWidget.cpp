@@ -2,8 +2,8 @@
 
 #include <algine/core/painter/Paint.h>
 #include <algine/core/Engine.h>
-#include <algine/core/widgets/Units.h>
 #include <algine/core/TypeRegistry.h>
+#include <algine/core/widgets/Dimen.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/constants.hpp>
@@ -32,7 +32,8 @@ RotatingOrbitsWidget::RotatingOrbitsWidget()
 }
 
 void RotatingOrbitsWidget::onDraw(Painter &painter) {
-    const auto widgetSize = static_cast<float>(128_dp); // width & height
+    // TODO: precalculate this value
+    const auto widgetSize = Dimen(128, Unit::dp).pixels(getParentWindow()); // width & height
 
     auto drawOrbit = [widgetSize, &painter](OrbitParameters &orbit) {
         float angle = fmodf((float) Engine::timeFromStart() / 1000.0f * orbit.angularVelocity, 2 * glm::pi<float>());

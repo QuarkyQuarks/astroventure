@@ -8,6 +8,9 @@ using namespace algine;
 class LoaderUIScene: public Widgets::Scene {
 public:
     explicit LoaderUIScene(Object *parent);
+
+protected:
+    void onShow() override;
 };
 
 #endif //ASTROVENTURE_LOADERUISCENE_H

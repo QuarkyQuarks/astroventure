@@ -10,7 +10,6 @@ GameOverLayer::GameOverLayer(GameUIScene *scene)
         if (!canBeClosed())
             return;
         scene->parentGameScene()->getResetAction().trigger();
-        scene->showLayerInsteadOf(scene->start, scene->game);
     };
 
     auto container = getContainer();
@@ -28,7 +27,8 @@ GameOverLayer::GameOverLayer(GameUIScene *scene)
         blockClose();
     });
 
-    auto onResetCompletedSub = resetAction.addOnCompletedListener([this] {
+    auto onResetCompletedSub = resetAction.addOnCompletedListener([scene, this] {
+        scene->replaceLayer(scene->game, scene->start);
         unblockClose();
         close();
     });

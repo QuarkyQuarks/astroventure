@@ -13,7 +13,7 @@ class GameContent;
 
 class LoaderContent: public Content, public UnifiedEventHandler {
 public:
-    LoaderContent();
+    LoaderContent(Object *parent);
 
     void onShow() override;
 

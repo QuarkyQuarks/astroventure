@@ -7,8 +7,9 @@
 void init() {
     auto window = new QtWindow();
     window->setDimensions(500, 1000);
+    window->setDPI(200); // TODO: just for testing
     window->addOnInitializedListener([window]() {
-        window->setContent(new LoaderContent());
+        window->setContent(new LoaderContent(window));
         window->renderLoop();
     });
 

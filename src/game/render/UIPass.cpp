@@ -13,5 +13,5 @@ Texture2D* UIPass::getOutput() {
 }
 
 void UIPass::render() {
-    m_uiScene->draw();
+    m_uiScene->render();
 }

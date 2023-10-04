@@ -31,9 +31,10 @@ public:
     GameScene* parentGameScene() const;
     GameRenderer* parentGameRenderer() const;
 
-    MenuLayer* firstMenuLayer() const;
-
     tulz::Subscription<int, int> addOnSizeChangedListener(const tulz::Observer<int, int> &listener);
+
+protected:
+    void onShow() override;
 
 private:
     tulz::Subject<int, int> m_onSizeChanged;

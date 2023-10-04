@@ -42,6 +42,8 @@ void GameContent::onShow() {
 
     // must be triggered due to some init reasons
     onSizeChanged(width(), height());
+
+    m_scene->show();
 }
 
 void GameContent::onSizeChanged(int width, int height) {

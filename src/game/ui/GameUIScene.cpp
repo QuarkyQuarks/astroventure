@@ -14,8 +14,6 @@ GameUIScene::GameUIScene(Object *parent)
     pause = new PauseLayer(this);
     settings = new SettingsLayer(this);
 
-    start->show();
-
     auto gameContent = parentGameScene()->parentGameContent();
     listen(gameContent);
 
@@ -39,14 +37,11 @@ GameRenderer* GameUIScene::parentGameRenderer() const {
     return parent;
 }
 
-MenuLayer* GameUIScene::firstMenuLayer() const {
-    for (int i = 1; i < getLayersCount(); ++i)
-        if (auto menuLayer = dynamic_cast<MenuLayer*>(layerAt(i)); menuLayer)
-            return menuLayer;
-    return nullptr;
-}
-
 Subscription<int, int> GameUIScene::addOnSizeChangedListener(const Observer<int, int> &listener) {
     return m_onSizeChanged.subscribe(listener);
+}
+
+void GameUIScene::onShow() {
+    start->show();
 }
 } // UI

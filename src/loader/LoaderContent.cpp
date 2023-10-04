@@ -8,7 +8,9 @@
 #include <algine/core/font/FontLibrary.h>
 #include <algine/core/log/Log.h>
 
-LoaderContent::LoaderContent() {
+LoaderContent::LoaderContent(Object *parent)
+    : Content(parent)
+{
     // enable thread safety, so we can safely run lua scripts from different threads
     Lua::getDefault().setThreadSafety(true);
 
@@ -49,13 +51,14 @@ LoaderContent::LoaderContent() {
 
 void LoaderContent::onShow() {
     m_uiScene->setSize(width(), height());
+    m_uiScene->show();
 }
 
 void LoaderContent::render() {
     Framebuffer::getDefault()->bind();
     Framebuffer::getDefault()->clearColorBuffer();
 
-    m_uiScene->draw();
+    m_uiScene->render();
 
     m_loader.pollTasks();
 }

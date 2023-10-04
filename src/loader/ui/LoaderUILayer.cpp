@@ -6,8 +6,6 @@
 LoaderUILayer::LoaderUILayer(LoaderUIScene *scene)
     : Widgets::Layer(scene)
 {
-    enable_if_desktop(Engine::setDPI(200)); // comment this line to display ui in natural size
-
     auto container = Widget::constructFromXMLFile<Container*>("ui/LoadingScreen.xml", this);
     setContainer(container);
 

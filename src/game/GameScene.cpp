@@ -72,21 +72,6 @@ GameScene::GameScene(GameContent *parent)
     });
 }
 
-void GameScene::render() {
-    auto currentFrameTime = Engine::timeFromStart();
-    m_prevDeltaFrameTime = static_cast<int>(currentFrameTime - m_prevFrameTime);
-    m_prevFrameTime = currentFrameTime;
-
-    m_gameTimeMs += getScaledFrameTime();
-
-    Framebuffer::setClearColor(0.0f, 0.0f, 0.0f);
-    m_cameraman.animate();
-    m_controller->update();
-    m_renderer->render();
-
-    m_onTick.notify();
-}
-
 LoaderConfig GameScene::resourceLoaderConfig() {
     return LoaderConfig::create<GameScene>({
         .loader = [this]() { loadResources(); },
@@ -249,6 +234,25 @@ float GameScene::getGameTimeSec() const {
 
 float GameScene::getGameTime() const {
     return m_gameTimeMs;
+}
+
+void GameScene::onShow() {
+    m_renderer->findChild<UI::GameUIScene*>()->show();
+}
+
+void GameScene::onRender() {
+    auto currentFrameTime = Engine::timeFromStart();
+    m_prevDeltaFrameTime = static_cast<int>(currentFrameTime - m_prevFrameTime);
+    m_prevFrameTime = currentFrameTime;
+
+    m_gameTimeMs += getScaledFrameTime();
+
+    Framebuffer::setClearColor(0.0f, 0.0f, 0.0f);
+    m_cameraman.animate();
+    m_controller->update();
+    m_renderer->render();
+
+    m_onTick.notify();
 }
 
 void GameScene::loadResources() {
