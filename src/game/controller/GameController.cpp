@@ -30,6 +30,14 @@ GameController::GameController(GameScene &gameScene)
     });
 }
 
+void GameController::onActivated() {
+    emitEvent<GameController>(EventType::Game);
+}
+
+void GameController::onDeactivated() {
+
+}
+
 void GameController::update() {
     m_gameScene.getMechanics().update();
 
@@ -38,7 +46,7 @@ void GameController::update() {
     }
 }
 
-void GameController::event(const Event &event) {
+void GameController::event(const algine::Event &event) {
     Log::debug(LOG_TAG, __func__);
 
     if (eventHandler != nullptr) {
@@ -55,7 +63,7 @@ void GameController::unblockLaunch() {
 }
 
 void GameController::launchEventHandler(const algine::Event &event) {
-    if (event.getId() != Event::Id::Click)
+    if (event.getId() != algine::Event::Id::Click)
         return;
     m_gameScene.getMechanics().launch();
 }

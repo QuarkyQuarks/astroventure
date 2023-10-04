@@ -10,7 +10,15 @@ class Planet;
  */
 class GameController: public Controller {
 public:
+    enum class EventType {
+        Game
+    };
+
+public:
     explicit GameController(GameScene &gameScene);
+
+    void onActivated() override;
+    void onDeactivated() override;
 
     void update() override;
     void event(const algine::Event &event) override;

@@ -95,7 +95,16 @@ GameContent* GameScene::parentGameContent() const {
 }
 
 void GameScene::setController(Controller *controller) {
+    auto oldController = m_controller;
     m_controller = controller;
+
+    if (oldController) {
+        oldController->onDeactivated();
+    }
+
+    if (m_controller) {
+        m_controller->onActivated();
+    }
 }
 
 Controller* GameScene::getController() const {
@@ -240,6 +249,15 @@ float GameScene::getGameTimeSec() const {
 
 float GameScene::getGameTime() const {
     return m_gameTimeMs;
+}
+
+void GameScene::emitControllerEvent(const Controller::Event &event) {
+    m_onControllerEvent.notify(event);
+}
+
+Subscription<const Controller::Event&>
+GameScene::addOnControllerEventListener(const Observer<const Controller::Event&> &listener) {
+    return m_onControllerEvent.subscribe(listener);
 }
 
 void GameScene::onShow() {

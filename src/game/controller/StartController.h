@@ -5,7 +5,15 @@
 
 class StartController: public Controller {
 public:
+    enum class EventType {
+        Start
+    };
+
+public:
     explicit StartController(GameScene &gameScene);
+
+    void onActivated() override;
+    void onDeactivated() override;
 
     void update() override;
     void event(const algine::Event &event) override;

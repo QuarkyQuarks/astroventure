@@ -125,6 +125,21 @@ public:
      */
     float getGameTime() const;
 
+    /**
+     * Emits a controller event.
+     * @note This function should only be used by controllers.
+     * @param event The event to emit.
+     */
+    void emitControllerEvent(const Controller::Event &event);
+
+    /**
+     * Adds a controller event listener.
+     * @param listener The listener to be added.
+     * @return Subscription object representing the added listener.
+     */
+    Subscription<const Controller::Event&>
+    addOnControllerEventListener(const Observer<const Controller::Event&> &listener);
+
 protected:
     void onShow() override;
     void onRender() override;
@@ -150,6 +165,7 @@ private:
 
 private:
     Subject<> m_onTick;
+    Subject<const Controller::Event&> m_onControllerEvent;
 
 private:
     Cameraman m_cameraman;
