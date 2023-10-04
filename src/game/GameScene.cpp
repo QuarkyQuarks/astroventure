@@ -14,10 +14,16 @@ STATIC_INITIALIZER_IMPL(GameScene) {
         if (env["GameScene"].valid())
             return;
 
-        auto usertype = env.new_usertype<GameScene>("GameScene");
+        // see https://github.com/ThePhD/sol2/issues/1532
+
+        auto usertype = env.new_usertype<GameScene>("GameScene",
+            sol::base_classes, sol::bases<Scene, Object, Loadable>());
         usertype["getColorSchemeManager"] = &GameScene::getColorSchemeManager;
         usertype["cast"] = [](Scene *scene) {
             return dynamic_cast<GameScene*>(scene);
+        };
+        usertype["asParentOf"] = [](Object *object) {
+            return object->findParent<GameScene*>();
         };
     });
 }
