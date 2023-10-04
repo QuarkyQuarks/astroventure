@@ -1,6 +1,10 @@
 #include "AudioManager.h"
 #include "game/GameScene.h"
 #include "game/GameContent.h"
+#include "game/controller/StartController.h"
+#include "game/controller/GameController.h"
+
+#include <algine/core/log/Log.h>
 
 AudioManager::AudioManager(GameScene &scene)
     : m_scene(scene)
@@ -29,6 +33,14 @@ AudioManager::AudioManager(GameScene &scene)
     });
     gameContent->addOnFocusRestoredListener([this]() {
         m_player.resume();
+    });
+
+    m_scene.addOnControllerEventListener([this](const Controller::Event &event) {
+        if (event == StartController::EventType::Start) {
+            Log::warn("AudioManager", "TODO: play start theme here"); // TODO
+        } else if (event == GameController::EventType::Game) {
+            Log::warn("AudioManager", "TODO: play game theme here"); // TODO
+        }
     });
 }
 
