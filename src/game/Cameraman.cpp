@@ -51,7 +51,7 @@ void Cameraman::intro() {
     }
 
     auto currentFrame = m_scene.getGameTime();
-    m_animationPos = glm::min((currentFrame - m_animationStartTime) / 2000.0f, 1.0f);
+    m_animationPos = glm::min((currentFrame - m_animationStartTime) / 1700.0f, 1.0f);
 
     m_camera.setPos(m_camTrajectory.getPoint(m_animationPos));
     m_cameraTargetPos = m_camTargetTrajectory.getPoint(m_animationPos);
