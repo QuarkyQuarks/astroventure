@@ -1,6 +1,7 @@
 #include "ButtonAnimation.h"
 #include "AnimTools.h"
 #include "game/scheme/ColorSchemeManager.h"
+#include "game/GameScene.h"
 
 #include <algine/core/widgets/Widget.h>
 
@@ -26,10 +27,14 @@ ButtonAnimation::ButtonAnimation(Type type)
 void ButtonAnimation::onStart() {
     auto widget = getWidget();
 
-    // auto &scheme = ColorSchemeManager::getColorScheme();
-    ColorScheme scheme; // TODO
-    const Color &c1 = scheme.btnBackground;
-    const Color &c2 = scheme.btnPressedBackground;
+    // try to find a parent game scene & get a color scheme
+    auto scene = widget->findParent<GameScene*>();
+    assert(scene != nullptr);
+
+    auto &colorScheme = scene->getColorSchemeManager().getColorScheme();
+
+    const Color &c1 = colorScheme.btnBackground;
+    const Color &c2 = colorScheme.btnPressedBackground;
 
     if (m_type == Type::Click) {
         if (widget->hasAnimation(Event::Release)) {

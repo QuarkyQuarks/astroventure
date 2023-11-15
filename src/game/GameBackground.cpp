@@ -26,7 +26,8 @@ GameBackground::GameBackground(GameScene &scene, Object *parent)
       m_normalsBuffer(new ArrayBuffer(this)),
       m_texCoordsBuffer(new ArrayBuffer(this)),
       m_layout(new InputLayout(this)),
-      m_pointsCount(0),
+      m_color(new ColorMap(1, 1, Texture::RGB16F, this)), // TODO
+      m_pointCount(0),
       m_projection(),
       m_modelView(),
       m_scene(scene)
@@ -51,6 +52,15 @@ GameBackground::GameBackground(GameScene &scene, Object *parent)
     scene.parentGameContent()->addOnSizeChangedListener([this](int width, int height) {
         m_projection = glm::perspective(PI / 6, (float) width / (float) height, 1.0f, 64.0f);
     });
+
+    auto updateColor = [this] {
+        m_color->setColor({0, 0}, m_scene.getColorSchemeManager().getColorScheme().gameBackground);
+        m_color->update();
+    };
+
+    updateColor();
+
+    scene.getColorSchemeManager().addOnChangedListener(updateColor);
 }
 
 void GameBackground::generate() {
@@ -63,14 +73,14 @@ void GameBackground::generate() {
     constexpr auto minBorder = std::array<float, 2>{{-1.7f, -3.2f}};
     constexpr auto maxBorder = std::array<float, 2>{{1.7f, 3.2f}};
 
-    auto points0 = PoissonDiskSampling(radius, minBorder, maxBorder, 30, Random::get(0, 100));
+    auto sampledPoints = PoissonDiskSampling(radius, minBorder, maxBorder, 30, Random::get(0, 100));
 
-    m_pointsCount = points0.size();
+    m_pointCount = static_cast<int>(sampledPoints.size());
 
     std::vector<double> points;
-    points.reserve(points0.size() * 2);
+    points.reserve(m_pointCount * 2);
 
-    for (auto &point : points0) {
+    for (auto &point : sampledPoints) {
         points.emplace_back(point[0]);
         points.emplace_back(point[1]);
     }
@@ -80,9 +90,9 @@ void GameBackground::generate() {
     std::swap(m_triangles, triangulatedPoints.triangles);
 
     // init z delta coordinates buffer
-    m_zPositions.resize(m_pointsCount);
+    m_zPositions.resize(m_pointCount);
 
-    for (uint i = 0; i < m_pointsCount; ++i)
+    for (uint i = 0; i < m_pointCount; ++i)
         m_zPositions[i] = Random::get(-9.0f, -8.0f);
 
     m_vertices.reserve(m_triangles.size() * 3);
@@ -108,23 +118,15 @@ void GameBackground::generate() {
     // texture coordinates
 
     const auto texCoordSize = m_vertices.size() / 3 * 2;
-    m_texCoords.resize(texCoordSize);
-
-    // TODO
-    auto uv = glm::vec2(0.0f);
-
-    for (int i = 0; i < texCoordSize; i += 2) {
-        m_texCoords[i] = uv.x;
-        m_texCoords[i + 1] = uv.y;
-    }
+    m_texCoords.resize(texCoordSize, 0.0f);
 
     setBuffer(m_texCoordsBuffer, m_texCoords);
 
     // init animation arrays
-    m_frequency.resize(m_pointsCount);
-    m_phase.resize(m_pointsCount);
+    m_frequency.resize(m_pointCount);
+    m_phase.resize(m_pointCount);
 
-    for (uint i = 0; i < m_pointsCount; ++i) {
+    for (uint i = 0; i < m_pointCount; ++i) {
         m_frequency[i] = Random::get(1.25f, 1.75f);
         m_phase[i] = Random::get(-20.0f, 20.0f);
     }
@@ -136,6 +138,8 @@ void GameBackground::draw(ShaderProgram *program) {
     program->setFloat("specularStrength", SpecularStrength);
     program->setMat4("MVPMatrix", m_projection * m_modelView);
     program->setMat4("modelView", m_modelView);
+
+    m_color->get()->use(0);
 
     m_layout->bind();
     Engine::disableDepthMask();

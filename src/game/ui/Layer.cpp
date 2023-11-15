@@ -1,6 +1,6 @@
 #include "Layer.h"
 #include "GameUIScene.h"
-#include "game/scheme/ColorSchemeManager.h"
+#include "game/GameScene.h"
 
 #include <algine/core/assert_cast.h>
 #include <algine/core/widgets/Container.h>
@@ -10,9 +10,10 @@ namespace UI {
 Layer::Layer(GameUIScene *scene)
     : Widgets::Layer(scene)
 {
-    // ColorSchemeManager::addOnChangeListener([this]() {
-        // updateColorScheme(); TODO
-    // });
+    auto &colorSchemeManager = scene->parentGameScene()->getColorSchemeManager();
+    colorSchemeManager.addOnChangedListener([this] {
+        updateColorScheme();
+    });
 }
 
 GameUIScene* Layer::parentGameUIScene() const {
