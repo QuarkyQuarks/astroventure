@@ -2,8 +2,8 @@
 #define ASTROVENTURE_COLORSCHEME_H
 
 #include <algine/core/Color.h>
-
 #include <tulz/static_initializer.h>
+#include <functional>
 
 using namespace algine;
 
@@ -19,7 +19,9 @@ public:
     Color btnPressedBackground {100, 83, 148, 217};
 
 public:
-    void rotate(float val);
+    using Mixer = std::function<Color(const Color&, const Color&, float)>;
+
+    static ColorScheme mix(const ColorScheme &src, const ColorScheme &dst, float pos, const Mixer &mixer);
 };
 
 #endif //ASTROVENTURE_COLORSCHEME_H
