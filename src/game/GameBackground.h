@@ -4,6 +4,7 @@
 #include <algine/core/buffers/ArrayBuffer.h>
 #include <algine/core/InputLayout.h>
 #include <algine/core/shader/ShaderProgram.h>
+#include <algine/std/ColorMap.h>
 
 #include <tulz/Array.h>
 #include <glm/mat4x4.hpp>
@@ -44,8 +45,10 @@ private:
 
     InputLayout *m_layout;
 
+    ColorMap *m_color;
+
 private:
-    int m_pointsCount;
+    int m_pointCount;
 
     std::vector<float> m_vertices;
     std::vector<float> m_normals;
