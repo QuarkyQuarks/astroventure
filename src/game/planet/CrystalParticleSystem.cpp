@@ -27,30 +27,35 @@ struct CrystalParticleData {
     glm::vec3 rotationVelocity {0.0f};
     BezierCurve<glm::vec3> trajectory;
     float animationStartTime {};
+    Planet *parent {};
 };
 
-void CrystalParticleSystem::spawn(const glm::vec3 &pos, const glm::vec3 &dir, int count) {
+void CrystalParticleSystem::spawn(const glm::vec3 &pos, const glm::vec3 &dir, Planet *parent) {
     // calculating trajectory for each crystal using a Bezier curve
     glm::vec3 intermediatePoint1 = pos + dir * Random::get(0.2f, 0.3f);
     glm::vec3 intermediatePoint2 = glm::vec3(0.0f, 0.0f, 0.3f);
     Trajectory particleCurve({pos, intermediatePoint1, intermediatePoint2, m_endPoint});
 
-    for (int i = 0; i < count; ++i) {
-        // Note: designated initializes will be supported in c++2a
-        addParticle({
-            .pos = pos,
-            .rotate = {0.0f, 0.0f, 0.0f},
-            .scale = Random::get(0.003f, 0.006f),
-            .shapeId = 0,
-            .data = new CrystalParticleData({
-                .rotationVelocity = glm::vec3(TWO_PI),
-                .trajectory = particleCurve,
-                .animationStartTime = parentGameScene()->getGameTime()
-            })
-        });
+    addParticle({
+        .pos = pos,
+        .rotate = {0.0f, 0.0f, 0.0f},
+        .scale = Random::get(0.003f, 0.006f),
+        .shapeId = 0,
+        .data = new CrystalParticleData({
+            .rotationVelocity = glm::vec3(TWO_PI),
+            .trajectory = particleCurve,
+            .animationStartTime = parentGameScene()->getGameTime(),
+            .parent = parent
+        })
+    });
 
-        m_onParticleSpawned.notify();
-    }
+    parent->lockReuse();
+
+    m_onParticleSpawned.notify();
+}
+
+Planet* CrystalParticleSystem::getParticleParent(const Particle &particle) {
+    return static_cast<CrystalParticleData*>(particle.data)->parent;
 }
 
 void CrystalParticleSystem::updateParticle(ParticleSystem::Particle &particle) {
@@ -70,7 +75,8 @@ bool CrystalParticleSystem::isRemove(const ParticleSystem::Particle &particle) c
     return glm::distance(particle.pos, m_endPoint) < 0.01f;
 }
 
-void CrystalParticleSystem::removed(const ParticleSystem::Particle &particle) {
+void CrystalParticleSystem::removed(const Particle &particle) {
+    getParticleParent(particle)->unlockReuse();
     m_onParticleRemoved.notify();
     delete static_cast<CrystalParticleData*>(particle.data);
 }
