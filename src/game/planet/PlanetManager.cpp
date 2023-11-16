@@ -21,6 +21,9 @@ Planet* PlanetManager::get(int flags, const Properties &properties) {
 
     auto planet = m_planetGenerator->generate(base);
 
+    if (base == nullptr)
+        planet->lockReuse();
+
     applyFlags(planet, flags, properties);
 
     return planet;
@@ -36,24 +39,35 @@ void PlanetManager::getAsync(Callback callback, int flags, const Properties &pro
         return;
     }
 
-    m_planetGenerator->generateAsync([flags, properties, this, callback = std::move(callback)](Planet *planet) {
+    m_planetGenerator->generateAsync([=, this, callback = std::move(callback)](Planet *planet) {
         applyFlags(planet, flags, properties);
+
+        if (base == nullptr)
+            planet->lockReuse();
+
         callback(planet);
     }, base);
 }
 
 void PlanetManager::done(Planet *planet) {
+    planet->unlockReuse();
     planet->setParent(this);
 }
 
 Planet* PlanetManager::popBase() {
+    // Lock by the `Object` class is not enough:
+    // we want to be sure that the same base will
+    // not be returned twice before it is locked
+    // for reuse.
     std::lock_guard locker(m_basePlanetMutex);
 
-    auto base = findChild<Planet*>(FindOption::Direct);
+    auto base = findChild<Planet*>([](Planet *planet) {
+        return planet->canBeReused();
+    }, FindOption::Direct);
 
     if (base != nullptr) {
         base->removeChildren<PlanetOrbit*>(Object::FindOption::Direct);
-        base->setParent(nullptr);
+        base->lockReuse();
         base->setPos(0, 0, 0);
     }
 

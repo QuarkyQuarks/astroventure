@@ -12,7 +12,8 @@
 #include <glm/trigonometric.hpp>
 
 Planet::Planet(Object *parent)
-    : ClusterModel(SpaceModel::Type::Planet, parent)
+    : ClusterModel(SpaceModel::Type::Planet, parent),
+      m_lockCounter(0)
 {
     m_colorMap = new ColorMap(this);
 }
@@ -79,12 +80,12 @@ const Planet::CrystalsData& Planet::getCrystalsData() const {
 
 void Planet::setColorMap(ColorMap *colorMap) {
     colorMap->setParent(this);
-    if (m_colorMap->getParent() == this)
+    if (m_colorMap != nullptr && m_colorMap->getParent() == this)
         delete m_colorMap;
     m_colorMap = colorMap;
 }
 
-ColorMap* Planet::getColorMap() {
+ColorMap* Planet::getColorMap() const {
     return m_colorMap;
 }
 
@@ -165,4 +166,18 @@ void Planet::destroyCrystals() {
 void Planet::restoreCrystals() {
     auto shape = getShape();
     updateBuffer(shape->getVerticesBuffer(), m_crystals.vStart * 3 * sizeof(float), m_crystals.vertices);
+}
+
+void Planet::lockReuse() {
+    ++m_lockCounter;
+}
+
+void Planet::unlockReuse() {
+    if (m_lockCounter == 0)
+        throw std::runtime_error("The number of unlocks is greater than the number of locks");
+    --m_lockCounter;
+}
+
+bool Planet::canBeReused() const {
+    return m_lockCounter == 0;
 }

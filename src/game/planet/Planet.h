@@ -22,7 +22,7 @@ public:
     };
 
 public:
-    explicit Planet(Object *parent = defaultParent()); // TODO
+    explicit Planet(Object *parent = defaultParent());
 
     void setIndex(int index);
     int getIndex() const;
@@ -45,7 +45,7 @@ public:
     const CrystalsData& getCrystalsData() const;
 
     void setColorMap(ColorMap *colorMap);
-    ColorMap* getColorMap();
+    ColorMap* getColorMap() const;
     Texture2D* getTexture() const;
 
     PlanetOrbit* getOrbit();
@@ -55,6 +55,30 @@ public:
     void restoreCrystals();
 
     void setG(float g);
+
+    /**
+     * Increments the lock counter.
+     * While the planet is locked for reuse, it cannot
+     * be used as a base for another planet by the planet manager.
+     * @note This function is not thread safe.
+     */
+    void lockReuse();
+
+    /**
+     * Decrements the lock counter.
+     * If the counter reaches 0, the planet manager
+     * will be allowed to reuse this planet.
+     * @note This function is not thread safe.
+     */
+    void unlockReuse();
+
+    /**
+     * Checks whether the planet can be reused or not.
+     * @return `true` if the planet can be reused by the planet manager
+     * (i.e. the lock counter is equal to 0), `false` otherwise.
+     * @note This function is not thread safe.
+     */
+    bool canBeReused() const;
 
 private:
     // index on the screen (ordinal number)
@@ -72,6 +96,9 @@ private:
     CrystalsData m_crystals;
 
     ColorMap *m_colorMap;
+
+private:
+    int m_lockCounter;
 };
 
 #endif //SPACE_EXPLORER_PLANET_H
