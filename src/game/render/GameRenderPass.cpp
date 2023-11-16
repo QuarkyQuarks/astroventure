@@ -159,6 +159,9 @@ void GameRenderPass::renderParticles() {
     for (auto &particle : crystalParticles) {
         updateMatrices(crystalParticles.getTransform(particle));
 
+        auto planet = CrystalParticleSystem::getParticleParent(particle);
+        planet->getTexture()->use(0);
+
         auto shape = crystalParticles.getShape(particle.shapeId);
         shape->getInputLayout(0)->bind();
 
