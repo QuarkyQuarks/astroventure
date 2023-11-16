@@ -111,21 +111,21 @@ public:
         friend class Iterator;
 
     public:
-        inline Info(int platformId, int chunkId, PlanetOrbit *orbit)
+        Info(int platformId, int chunkId, PlanetOrbit *orbit)
                 : m_platformId(platformId), m_chunkId(chunkId), m_orbit(orbit) {}
 
-        inline int platformId() const { return m_platformId; }
-        inline int chunkId() const { return m_chunkId; }
+        int platformId() const { return m_platformId; }
+        int chunkId() const { return m_chunkId; }
 
-        inline Platform& platform() { return m_orbit->m_platforms[m_platformId]; }
-        inline Chunk& chunk() { return m_orbit->m_platforms[m_platformId].chunks[m_chunkId]; }
+        Platform& platform() { return m_orbit->m_platforms[m_platformId]; }
+        Chunk& chunk() { return m_orbit->m_platforms[m_platformId].chunks[m_chunkId]; }
 
-        inline float roll() const { return m_orbit->getChunkRoll(m_platformId, m_chunkId); }
-        inline float absRoll() const { return m_orbit->absAngle(roll()); }
-        inline float radius() const { return m_orbit->getChunkRadius(m_platformId, m_chunkId); }
-        inline glm::mat4 getTransform() { return m_orbit->getChunkTransform(m_platformId, m_chunkId); }
+        float roll() const { return m_orbit->getChunkRoll(m_platformId, m_chunkId); }
+        float absRoll() const { return m_orbit->absAngle(roll()); }
+        float radius() const { return m_orbit->getChunkRadius(m_platformId, m_chunkId); }
+        glm::mat4 getTransform() { return m_orbit->getChunkTransform(m_platformId, m_chunkId); }
 
-        inline bool operator==(const Info &other) const {
+        bool operator==(const Info &other) const {
             return m_orbit == other.m_orbit && m_platformId == other.m_platformId && m_chunkId == other.m_chunkId;
         }
 
