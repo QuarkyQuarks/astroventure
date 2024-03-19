@@ -1,8 +1,8 @@
 #include "PlanetGenerator.h"
 
-#include "game/scheme/ColorSchemeManager.h"
 #include "game/math/MathConstants.h"
 #include "game/math/VecTools.h"
+#include "game/GameScene.h"
 
 #include <algine/core/Window.h>
 #include <algine/core/log/Log.h>
@@ -62,8 +62,8 @@ void PlanetGenerator::generateAsync(Callback callback, Planet *base) {
 
 float PlanetGenerator::calculateAngularVelocity() {
     auto angularVelocityDir = static_cast<float>(Random::get<bool>() * 2 - 1); // -1 or 1
-    auto angularVelocity = angularVelocityDir * PI / 2.3f;
-    return angularVelocity;
+    auto angularVelocityAbs =  PI / 2.03f;
+    return angularVelocityDir * angularVelocityAbs;
 }
 
 template<typename T>
@@ -360,11 +360,7 @@ void PlanetGenerator::generateCrystals(PlanetData &data) {
 Planet* PlanetGenerator::gpuStep(PlanetData planetData) {
     float angularVelocity = calculateAngularVelocity();
 
-    // TODO: do we need this mutex?
-    std::scoped_lock locker(m_mutex);
-
-    // auto &colorScheme = ColorSchemeManager::getColorScheme(); TODO
-    ColorScheme colorScheme; // TODO
+    auto &colorScheme = findParent<GameScene*>()->getColorSchemeManager().getColorScheme();
 
     auto updateColorMap = [&](ColorMap *colorMap) {
         colorMap->setColor(planetColorUV, colorScheme.planetColor);
@@ -419,8 +415,8 @@ Planet* PlanetGenerator::gpuStep(PlanetData planetData) {
     auto shape = shapeBuilder.getCurrentShape();
     shape->setMeshes(planetData.meshes);
 
-    // create color map
-    auto colorMap = new ColorMap(colorMapSize, Texture::RGB16F);
+    // create a color map
+    auto colorMap = new ColorMap(colorMapSize, Texture::RGB16F); // TODO
     updateColorMap(colorMap);
 
     planet->setRotatorType(Rotator::Type::Euler);

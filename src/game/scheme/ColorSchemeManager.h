@@ -10,19 +10,53 @@ using namespace tulz;
 
 class GameScene;
 
+/**
+ * The class that manages the game color scheme.
+ * Color scheme changes when the score changes.
+ */
 class ColorSchemeManager {
     STATIC_INITIALIZER_DECL
 
 public:
     explicit ColorSchemeManager(GameScene &scene);
 
-    const ColorScheme& getColorScheme();
+    /**
+     * @return The current color scheme.
+     */
+    const ColorScheme& getColorScheme() const;
+
+    /**
+     * Adds on color scheme changed listener
+     * @param listener
+     * @return
+     */
+    Subscription<> addOnChangedListener(const Observer<> &listener);
 
 private:
     void update();
 
 private:
-    Subject<> m_onColorSchemeChanged;
+    struct ColorSchemeDetails {
+        /**
+         * The current color scheme
+         */
+        ColorScheme colorScheme;
+
+        /**
+         * Will be used to mix the current
+         * color scheme with the next
+         */
+        ColorScheme::Mixer mixer;
+    };
+
+    static std::vector<ColorSchemeDetails> keySchemes();
+
+private:
+    std::vector<ColorSchemeDetails> m_keySchemes;
+    float m_keyScheme; // value in range [0, m_keySchemes.size())
+
+private:
+    Subject<> m_onChanged;
     ColorScheme m_colorScheme;
 };
 

@@ -61,7 +61,6 @@ private:
 
 private:
     ThreadPool m_threadPool;
-    std::mutex m_mutex;
     IcoSphere m_crystalsBase;
     PlanetGraph::NeighborList m_crystalsGraph;
     PCHIPInterpolator m_crystalsInterpolator;

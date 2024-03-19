@@ -118,10 +118,11 @@ protected:
     void onStart() override {
         m_half = false;
 
-        // TODO: color themes & move to ctor
-        auto &color = getWidget()->getBackground().getColor();
-        setFrom(Color::fromRgbF(color.redF(), color.greenF(), color.blueF(), 0.53f));
-        setTo(Color::fromRgbF(color.redF(), color.greenF(), color.blueF(), 0.85f));
+        auto scene = m_layer->findParent<GameScene*>();
+        auto &colorScheme = scene->getColorSchemeManager().getColorScheme();
+
+        setFrom(colorScheme.btnBackground);
+        setTo(colorScheme.btnPressedBackground);
     }
 
     void onAnimate() override {
@@ -142,8 +143,6 @@ private:
     GameLayer *m_layer;
 };
 
-// TODO: color theme!
-
 void GameLayer::reset() {
     m_labelScore->setText("0");
     m_labelCrystals->setText("0");
@@ -161,9 +160,11 @@ void GameLayer::crystalsChanged() {
             anim->setPos(1.0f - pos);
         }
     } else {
-        auto &color = m_crystalsContainer->getBackground().getColor();
-        Color c1 = Color::fromRgbF(color.redF(), color.greenF(), color.blueF(), 0.53f);
-        Color c2 = Color::fromRgbF(color.redF(), color.greenF(), color.blueF(), 0.85f);
+        auto scene = findParent<GameScene*>();
+        auto &colorScheme = scene->getColorSchemeManager().getColorScheme();
+
+        auto &c1 = colorScheme.btnBackground;
+        auto &c2 = colorScheme.btnPressedBackground;
 
         m_crystalsContainer->addAnimation(
             Widgets::Animation::create<Widgets::ColorAnimation>(c1, c2, AnimTools::fadeInOutInterp()));

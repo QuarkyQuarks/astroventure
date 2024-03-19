@@ -104,7 +104,7 @@ void Mechanics::takeOff() {
     spacecraft->changePos(deltaPos);
 
     const auto startingAngle = adjustedAngle<num_t>(spacecraft->getRoll() + glm::pi<num_t>() / 2.0);
-    constexpr num_t accelScalar = 5.5;
+    constexpr num_t accelScalar = 6.75;
     const vec2 acceleration {accelScalar * std::cos(startingAngle), accelScalar * std::sin(startingAngle)};
 
     vec3 deltaVel {0, 0, 0};
@@ -207,7 +207,7 @@ void Mechanics::flight() {
     auto &planets = m_scene.getPlanets();
     auto spacecraft = m_scene.getSpacecraft();
 
-    constexpr num_t landingRadius = 0.3;
+    constexpr num_t landingRadius = 0.32;
 
     vec2 impactFromPlanet[2];
     vec2 distToPlanet[2];
@@ -324,7 +324,7 @@ void Mechanics::landing() {
     deltaPos.y = ODE::linear(spacecraft->getVelocity().y, stepInterval);
     spacecraft->changePos(deltaPos);
 
-    constexpr num_t accelScalar = -0.5;
+    constexpr num_t accelScalar = -0.65;
     num_t roll = spacecraft->getRoll() + PI / 2;
     const vec2 acceleration {accelScalar * std::cos(roll), accelScalar * std::sin(roll)};
 
