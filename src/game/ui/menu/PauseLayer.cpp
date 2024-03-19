@@ -19,7 +19,7 @@ PauseLayer::PauseLayer(GameUIScene *scene)
     setCloseWidget(container, closeAction);
     setCloseWidget(container->findChild<Widget*>("label"), closeAction);
 
-    container->findChild<Widget*>("exit")->setEventListener(Event::Click, [=](Widget*, const Event&) {
+    container->findChild<Widget*>("exit")->setEventListener(Event::Click, [=, this](Widget*, const Event&) {
         if (!canBeClosed())
             return;
         gameScene->getResetAction().trigger();
