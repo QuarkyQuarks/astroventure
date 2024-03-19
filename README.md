@@ -1,6 +1,11 @@
 # Astroventure
 
-Low-Poly Space Game for Android & Linux written in C++20.
+![stability-wip](https://img.shields.io/badge/Stability-WIP-lightgrey.svg)
+![Linux status](https://img.shields.io/badge/Linux-Supported-navajowhite)
+![Windows status](https://img.shields.io/badge/Windows-Supported-lightblue)
+![Android status](https://img.shields.io/badge/Android-WIP-lightgreen)
+
+Cross-platform Low Poly Space Game written in C++20.
 
 ## Dependencies
 
