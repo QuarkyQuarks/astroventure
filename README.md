@@ -4,6 +4,7 @@
 ![Linux status](https://img.shields.io/badge/Linux-Supported-navajowhite)
 ![Windows status](https://img.shields.io/badge/Windows-Supported-lightblue)
 ![Android status](https://img.shields.io/badge/Android-WIP-lightgreen)
+[![YouTube demo](https://img.shields.io/badge/YouTube-Demo-indianred?logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=x9qBZVg9VeQ)
 
 <a href="https://www.youtube.com/watch?v=x9qBZVg9VeQ">
 <img src="https://i.imgur.com/EBhhix8.png" alt="Astroventure demo - YouTube" width="25%" height="25%">
