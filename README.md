@@ -7,6 +7,7 @@
 
 <a href="https://www.youtube.com/watch?v=x9qBZVg9VeQ">
 <img src="https://i.imgur.com/EBhhix8.png" alt="Astroventure demo - YouTube" width="25%" height="25%">
+<img src="https://i.imgur.com/VUuHgo4.png" alt="Astroventure demo - YouTube" width="25%" height="25%">
 </a>
 
 Cross-platform Low Poly Space Game written in C++20.
